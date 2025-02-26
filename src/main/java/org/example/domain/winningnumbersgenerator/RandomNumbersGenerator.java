@@ -6,10 +6,8 @@ import java.util.Random;
 import java.util.Set;
 
 public class RandomNumbersGenerator implements RandomNumbersGenerable {
-    private final int MINIMUM_NUMBER = 1;
-    private final int MAXIMUM_NUMBER = 99;
-    public static final int NUMBER_OF_WINNING_NUMBERS = 6;
-    private final int RANDOM_NUMBER_BOUND = (MAXIMUM_NUMBER - MINIMUM_NUMBER) + 1;
+    public static final int NUMBER_OF_WINNING_NUMBERS = WinningNumbersInfo.SIZE.number;
+    private final int RANDOM_NUMBER_BOUND = (WinningNumbersInfo.MAXIMUM_VALUE.number - WinningNumbersInfo.MINIMUM_VALUE.number) + 1;
 
     @Override
     public Set<Integer> generateNumbers() {
