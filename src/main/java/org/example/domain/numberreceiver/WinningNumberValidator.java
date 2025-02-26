@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class NumberValidator {
+class WinningNumberValidator {
     public static final int MINIMUM_NUMBER = 1;
     public static final int MAXIMUM_NUMBER = 99;
     public static final int SIZE = 6;

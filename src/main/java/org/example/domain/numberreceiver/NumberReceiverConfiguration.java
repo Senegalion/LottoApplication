@@ -4,8 +4,8 @@ import java.time.Clock;
 
 public class NumberReceiverConfiguration {
     NumberReceiverFacade createForTest(IdGenerable idGenerator, Clock clock, TicketRepository ticketRepository) {
-        NumberValidator numberValidator = new NumberValidator();
+        WinningNumberValidator winningNumberValidator = new WinningNumberValidator();
         DrawDateGenerator drawDateGenerator = new DrawDateGenerator(clock);
-        return new NumberReceiverFacade(numberValidator, drawDateGenerator, idGenerator, ticketRepository);
+        return new NumberReceiverFacade(winningNumberValidator, drawDateGenerator, idGenerator, ticketRepository);
     }
 }
