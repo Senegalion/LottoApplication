@@ -14,15 +14,15 @@ import static org.example.domain.numberreceiver.ValidationResult.INPUT_SUCCESS;
 
 @AllArgsConstructor
 public class NumberReceiverFacade {
-    private NumberValidator numberValidator;
+    private WinningNumberValidator winningNumberValidator;
     private final DrawDateGenerator drawDateGenerator;
     private final IdGenerable idGenerator;
     private TicketRepository ticketRepository;
 
     public NumberReceiverResponseDto inputNumbers(Set<Integer> numbers) {
-        List<ValidationResult> correctNumbers = numberValidator.filterNumbers(numbers);
+        List<ValidationResult> correctNumbers = winningNumberValidator.filterNumbers(numbers);
         if (!correctNumbers.isEmpty()) {
-            String resultMessage = numberValidator.createResultMessage();
+            String resultMessage = winningNumberValidator.createResultMessage();
             return new NumberReceiverResponseDto(null, resultMessage);
         }
 
@@ -54,6 +54,10 @@ public class NumberReceiverFacade {
         return foundTickets.stream()
                 .map(TicketMapper::mapFromTicket)
                 .toList();
+    }
+
+    public LocalDateTime retrieveNextDrawDate() {
+        return drawDateGenerator.getNextDrawDate();
     }
 
     public List<TicketDto> retrieveAllTicketsByNextDrawDate() {
