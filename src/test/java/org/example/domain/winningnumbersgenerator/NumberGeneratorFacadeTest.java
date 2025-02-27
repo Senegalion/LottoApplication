@@ -18,10 +18,11 @@ import static org.mockito.Mockito.when;
 class NumberGeneratorFacadeTest {
     private final WinningNumbersRepository winningNumbersRepository = new WinningNumbersRepositoryTestImpl();
     NumberReceiverFacade numberReceiverFacade = mock(NumberReceiverFacade.class);
+    private final OneRandomNumberFetcher randomOneNumberFetcher = new SecureRandomOneNumberFetcher();
 
     @Test
     public void shouldReturnSetOfRequiredSize() {
-        RandomNumbersGenerable generator = new RandomNumbersGenerator();
+        RandomNumbersGenerable generator = new RandomNumbersGenerator(randomOneNumberFetcher);
         when(numberReceiverFacade.retrieveNextDrawDate()).thenReturn(LocalDateTime.now());
         WinningNumbersGeneratorFacade winningNumbersGenerator = new WinningNumbersGeneratorConfiguration().createForTest(generator, winningNumbersRepository, numberReceiverFacade);
 
@@ -32,7 +33,7 @@ class NumberGeneratorFacadeTest {
 
     @Test
     public void shouldReturnSetOfRequiredSizeWithinRequiredRange() {
-        RandomNumbersGenerable generator = new RandomNumbersGenerator();
+        RandomNumbersGenerable generator = new RandomNumbersGenerator(randomOneNumberFetcher);
         when(numberReceiverFacade.retrieveNextDrawDate()).thenReturn(LocalDateTime.now());
         WinningNumbersGeneratorFacade winningNumbersGenerator = new WinningNumbersGeneratorConfiguration().createForTest(generator, winningNumbersRepository, numberReceiverFacade);
 
