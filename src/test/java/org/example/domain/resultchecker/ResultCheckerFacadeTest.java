@@ -84,7 +84,7 @@ public class ResultCheckerFacadeTest {
                 numberReceiverFacade, winningNumbersGeneratorFacade, playerRepository);
         resultCheckerFacade.generateWinners();
 
-        ResultDTO resultDto = resultCheckerFacade.getWinner(id);
+        ResultDTO resultDto = resultCheckerFacade.findById(id);
 
         ResultDTO expectedResult = InputData.getResultDto1(id);
         assertThat(resultDto).isEqualTo(expectedResult);
@@ -101,6 +101,6 @@ public class ResultCheckerFacadeTest {
         ResultCheckerFacade resultCheckerFacade = new ResultCheckerConfiguration().createForTest(
                 numberReceiverFacade, winningNumbersGeneratorFacade, playerRepository);
 
-        assertThrows(PlayerNotFoundException.class, () -> resultCheckerFacade.getWinner(notExistingId));
+        assertThrows(PlayerNotFoundException.class, () -> resultCheckerFacade.findById(notExistingId));
     }
 }
