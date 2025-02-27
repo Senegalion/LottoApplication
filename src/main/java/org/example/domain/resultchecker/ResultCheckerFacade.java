@@ -38,7 +38,7 @@ public class ResultCheckerFacade {
                 .build();
     }
 
-    public ResultDTO getWinner(String id) {
+    public ResultDTO findById(String id) {
         Player player = playerRepository.findById(id)
                 .orElseThrow(() -> new PlayerNotFoundException(
                         "Player with id: [%s] has not been found in the database", id)
