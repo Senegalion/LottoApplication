@@ -1,7 +1,15 @@
 package org.example.domain.resultannouncer;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class ResultAnnouncerFacadeTest {
+    @Test
+    public void shouldReturnResponseWithLoseMessageIfTicketIsNotWinningTicket() {
 
+    }
+
+    @Test
+    public void shouldReturnResponseWithWinMessageIfTicketIsWinningTicket() {
+
+    }
 }
