@@ -19,10 +19,13 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit-jupiter.version>5.9.1</junit-jupiter.version>
+        <junit-jupiter.version>5.10.0</junit-jupiter.version>
         <assertj-core.version>3.23.1</assertj-core.version>
         <lombok.version>1.18.30</lombok.version>
         <mockito-core.version>4.9.0</mockito-core.version>
+        <testcontainers.version>1.20.5</testcontainers.version>
+        <mongodb.version>1.20.2</mongodb.version>
+        <wiremock-jre6.version>2.35.0</wiremock-jre6.version>
     </properties>
 
     <dependencies>
@@ -36,9 +39,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${junit-jupiter.version}</version>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mongodb</artifactId>
+            <version>${mongodb.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -59,7 +74,25 @@
             <version>${mockito-core.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock-jre8-standalone</artifactId>
+            <version>${wiremock-jre6.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit-jupiter.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <finalName>LottoApplication</finalName>
@@ -84,7 +117,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.example.LottoApp</mainClass>
+                            <mainClass>org.example.LottoSpringBootApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
