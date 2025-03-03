@@ -2,6 +2,7 @@ package org.example.domain.winningnumbersgenerator;
 
 import lombok.AllArgsConstructor;
 import org.example.domain.numberreceiver.NumberReceiverFacade;
+import org.example.domain.winningnumbersgenerator.dto.SixRandomNumbersDto;
 import org.example.domain.winningnumbersgenerator.dto.WinningNumbersDto;
 
 import java.time.LocalDateTime;
@@ -11,12 +12,13 @@ import java.util.Set;
 public class WinningNumbersGeneratorFacade {
     private WinningNumberValidator winningNumberValidator;
     private final NumberReceiverFacade numberReceiverFacade;
-    private final RandomNumbersGenerable randomNumbersGenerator;
+    private final RandomNumbersGenerable randomNumbersGenerable;
     private WinningNumbersRepository winningNumbersRepository;
 
     public WinningNumbersDto generateWinningNumbers() {
         LocalDateTime nextDrawDate = numberReceiverFacade.retrieveNextDrawDate();
-        Set<Integer> winningNumbers = randomNumbersGenerator.generateNumbers();
+        SixRandomNumbersDto sixRandomNumbersDto = randomNumbersGenerable.generateNumbers();
+        Set<Integer> winningNumbers = sixRandomNumbersDto.numbers();
         winningNumberValidator.validate(winningNumbers);
         winningNumbersRepository.save(WinningNumbers.builder()
                 .drawDate(nextDrawDate)
