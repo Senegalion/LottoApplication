@@ -1,5 +1,7 @@
 package org.example.domain.winningnumbersgenerator;
 
+import org.example.domain.winningnumbersgenerator.dto.SixRandomNumbersDto;
+
 import java.util.Set;
 
 public class WinningNumbersGeneratorTestImpl implements RandomNumbersGenerable {
@@ -15,7 +17,9 @@ public class WinningNumbersGeneratorTestImpl implements RandomNumbersGenerable {
     }
 
     @Override
-    public Set<Integer> generateNumbers() {
-        return generatedNumbers;
+    public SixRandomNumbersDto generateNumbers() {
+        return SixRandomNumbersDto.builder()
+                .numbers(generatedNumbers)
+                .build();
     }
 }
