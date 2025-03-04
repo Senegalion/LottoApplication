@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 public class WinningNumbersGeneratorScheduler {
     private final WinningNumbersGeneratorFacade winningNumbersGeneratorFacade;
 
-    @Scheduled(cron = "*/10 * * * * *")
-    public void f() {
+    @Scheduled(cron = "${lotto.number-generator.lotteryRunOccurrence}")
+    public void generateWinningNumbers() {
         WinningNumbersDto winningNumbersDto = winningNumbersGeneratorFacade.generateWinningNumbers();
         log.info(winningNumbersDto.winningNumbers().toString());
         log.info(winningNumbersDto.drawDate().toString());

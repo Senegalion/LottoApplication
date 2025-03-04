@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 
 @Configuration
 public class WinningNumbersGeneratorConfiguration {
@@ -14,7 +15,11 @@ public class WinningNumbersGeneratorConfiguration {
         return new WinningNumbersRepository() {
             @Override
             public Optional<WinningNumbers> findNumbersByDate(LocalDateTime date) {
-                return Optional.empty();
+                return Optional.of(WinningNumbers.builder()
+                        .winningNumbersId("1")
+                        .winningNumbers(Set.of(1, 2, 3, 4, 5, 6))
+                        .drawDate(LocalDateTime.of(2025, 3, 8, 12, 0, 0))
+                        .build());
             }
 
             @Override

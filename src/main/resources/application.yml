@@ -8,6 +8,7 @@ spring:
 
 lotto:
   number-generator:
+    lotteryRunOccurrence: "0 0 12 * * 6"
     facade:
       numberOfNumbers: 25
       minimumNumber: 1
