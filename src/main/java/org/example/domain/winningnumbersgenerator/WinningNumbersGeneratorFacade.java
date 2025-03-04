@@ -14,10 +14,16 @@ public class WinningNumbersGeneratorFacade {
     private final NumberReceiverFacade numberReceiverFacade;
     private final RandomNumbersGenerable randomNumbersGenerable;
     private WinningNumbersRepository winningNumbersRepository;
+    private final WinningNumbersGeneratorFacadeConfigurationProperties properties;
 
     public WinningNumbersDto generateWinningNumbers() {
         LocalDateTime nextDrawDate = numberReceiverFacade.retrieveNextDrawDate();
-        SixRandomNumbersDto sixRandomNumbersDto = randomNumbersGenerable.generateNumbers();
+        SixRandomNumbersDto sixRandomNumbersDto = randomNumbersGenerable
+                .generateNumbers(
+                        properties.numberOfNumbers(),
+                        properties.minimumNumber(),
+                        properties.maximumNumber()
+                );
         Set<Integer> winningNumbers = sixRandomNumbersDto.numbers();
         winningNumberValidator.validate(winningNumbers);
         winningNumbersRepository.save(WinningNumbers.builder()
@@ -25,6 +31,7 @@ public class WinningNumbersGeneratorFacade {
                 .winningNumbers(winningNumbers)
                 .build());
         return WinningNumbersDto.builder()
+                .drawDate(nextDrawDate)
                 .winningNumbers(winningNumbers)
                 .build();
     }
