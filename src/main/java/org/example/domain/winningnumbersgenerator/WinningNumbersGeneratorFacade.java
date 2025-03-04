@@ -31,6 +31,7 @@ public class WinningNumbersGeneratorFacade {
                 .winningNumbers(winningNumbers)
                 .build());
         return WinningNumbersDto.builder()
+                .drawDate(nextDrawDate)
                 .winningNumbers(winningNumbers)
                 .build();
     }

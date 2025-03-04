@@ -17,5 +17,6 @@ public class WinningNumbersGeneratorScheduler {
     public void f() {
         WinningNumbersDto winningNumbersDto = winningNumbersGeneratorFacade.generateWinningNumbers();
         log.info(winningNumbersDto.winningNumbers().toString());
+        log.info(winningNumbersDto.drawDate().toString());
     }
 }
