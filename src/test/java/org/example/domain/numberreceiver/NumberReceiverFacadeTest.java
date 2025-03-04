@@ -17,7 +17,7 @@ class NumberReceiverFacadeTest {
     private final TicketRepository ticketRepository = new TicketRepositoryTestImpl();
 
     IdGenerable idGenerator = new IdGenerator();
-    NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().createForTest(
+    NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(
             idGenerator,
             clock,
             ticketRepository
@@ -99,7 +99,7 @@ class NumberReceiverFacadeTest {
     @Test
     public void shouldReturnCorrectDrawDate() {
         Clock clock = Clock.fixed(LocalDateTime.of(2025, 2, 26, 10, 0, 0).toInstant(ZoneOffset.UTC), ZoneId.of("Europe/London"));
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().createForTest(idGenerator, clock, ticketRepository);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, clock, ticketRepository);
         Set<Integer> numbersFromUser = Set.of(1, 2, 3, 4, 5, 6);
 
         LocalDateTime testedDrawDate = numberReceiverFacade.inputNumbers(numbersFromUser).ticketDto().drawDate();
@@ -111,7 +111,7 @@ class NumberReceiverFacadeTest {
     @Test
     public void shouldReturnNextDrawDateWhenThereIsExactTimeOfTheDraw() {
         Clock clock = Clock.fixed(LocalDateTime.of(2025, 3, 1, 12, 0, 0).toInstant(ZoneOffset.UTC), ZoneId.of("Europe/London"));
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().createForTest(idGenerator, clock, ticketRepository);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, clock, ticketRepository);
         Set<Integer> numbersFromUser = Set.of(1, 2, 3, 4, 5, 6);
 
         LocalDateTime testedDrawDate = numberReceiverFacade.inputNumbers(numbersFromUser).ticketDto().drawDate();
@@ -126,7 +126,7 @@ class NumberReceiverFacadeTest {
         Instant fixedInstant = LocalDateTime.of(2025, 2, 26, 12, 0, 0).toInstant(ZoneOffset.UTC);
         ZoneId of = ZoneId.of("Europe/London");
         AdjustableClock clock = new AdjustableClock(fixedInstant, of);
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().createForTest(idGenerator, clock, ticketRepository);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, clock, ticketRepository);
         NumberReceiverResponseDto numberReceiverResponseDto = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
         clock.plusDays(1);
         NumberReceiverResponseDto numberReceiverResponseDto1 = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
@@ -149,7 +149,7 @@ class NumberReceiverFacadeTest {
         Instant fixedInstant = LocalDateTime.of(2025, 2, 26, 11, 50, 0).toInstant(ZoneOffset.UTC);
         ZoneId of = ZoneId.of("Europe/London");
         AdjustableClock clock = new AdjustableClock(fixedInstant, of);
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().createForTest(idGenerator, clock, ticketRepository);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, clock, ticketRepository);
         NumberReceiverResponseDto numberReceiverResponseDto = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
         clock.plusDays(1);
         NumberReceiverResponseDto numberReceiverResponseDto1 = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
@@ -170,7 +170,7 @@ class NumberReceiverFacadeTest {
     @Test
     public void shouldReturnEmptyCollectionsIfThereAreNoTickets() {
         Clock clock = Clock.fixed(LocalDateTime.of(2025, 2, 26, 12, 0, 0).toInstant(ZoneOffset.UTC), ZoneId.of("Europe/London"));
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().createForTest(idGenerator, clock, ticketRepository);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, clock, ticketRepository);
         LocalDateTime drawDate = LocalDateTime.now(clock);
 
         List<TicketDto> allTicketsByDate = numberReceiverFacade.retrieveAllTicketsByNextDrawDate(drawDate);
@@ -181,7 +181,7 @@ class NumberReceiverFacadeTest {
     @Test
     public void shouldReturnEmptyCollectionsIfDateIsAfterNextDrawDate() {
         Clock clock = Clock.fixed(LocalDateTime.of(2025, 3, 2, 12, 0, 0).toInstant(ZoneOffset.UTC), ZoneId.of("Europe/London"));
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().createForTest(idGenerator, clock, ticketRepository);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, clock, ticketRepository);
         NumberReceiverResponseDto numberReceiverResponseDto = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
 
         LocalDateTime drawDate = numberReceiverResponseDto.ticketDto().drawDate();
