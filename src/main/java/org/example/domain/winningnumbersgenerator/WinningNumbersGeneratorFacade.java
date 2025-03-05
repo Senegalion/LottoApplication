@@ -1,7 +1,7 @@
 package org.example.domain.winningnumbersgenerator;
 
 import lombok.AllArgsConstructor;
-import org.example.domain.numberreceiver.NumberReceiverFacade;
+import org.example.domain.drawdateretriever.DrawDateRetrieverFacade;
 import org.example.domain.winningnumbersgenerator.dto.SixRandomNumbersDto;
 import org.example.domain.winningnumbersgenerator.dto.WinningNumbersDto;
 
@@ -11,13 +11,13 @@ import java.util.Set;
 @AllArgsConstructor
 public class WinningNumbersGeneratorFacade {
     private WinningNumberValidator winningNumberValidator;
-    private final NumberReceiverFacade numberReceiverFacade;
+    private final DrawDateRetrieverFacade drawDateRetrieverFacade;
     private final RandomNumbersGenerable randomNumbersGenerable;
     private WinningNumbersRepository winningNumbersRepository;
     private final WinningNumbersGeneratorFacadeConfigurationProperties properties;
 
     public WinningNumbersDto generateWinningNumbers() {
-        LocalDateTime nextDrawDate = numberReceiverFacade.retrieveNextDrawDate();
+        LocalDateTime nextDrawDate = drawDateRetrieverFacade.retrieveNextDrawDate();
         SixRandomNumbersDto sixRandomNumbersDto = randomNumbersGenerable
                 .generateNumbers(
                         properties.numberOfNumbers(),
@@ -43,7 +43,7 @@ public class WinningNumbersGeneratorFacade {
     }
 
     public boolean areWinningNumbersGeneratedByDrawDate() {
-        LocalDateTime nextDrawDate = numberReceiverFacade.retrieveNextDrawDate();
+        LocalDateTime nextDrawDate = drawDateRetrieverFacade.retrieveNextDrawDate();
         return winningNumbersRepository.existsByDate(nextDrawDate);
     }
 }

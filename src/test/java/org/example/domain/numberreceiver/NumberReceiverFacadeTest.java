@@ -1,42 +1,46 @@
 package org.example.domain.numberreceiver;
 
-import org.example.domain.AdjustableClock;
+import org.example.domain.drawdateretriever.DrawDateRetrieverFacade;
 import org.example.domain.numberreceiver.dto.NumberReceiverResponseDto;
 import org.example.domain.numberreceiver.dto.TicketDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class NumberReceiverFacadeTest {
-    Clock clock = Clock.systemUTC();
     private final TicketRepository ticketRepository = new TicketRepositoryTestImpl();
+    DrawDateRetrieverFacade drawDateRetrieverFacade = mock(DrawDateRetrieverFacade.class);
 
     IdGenerable idGenerator = new IdGenerator();
     NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(
             idGenerator,
-            clock,
-            ticketRepository
+            ticketRepository,
+            drawDateRetrieverFacade
     );
-    DrawDateGenerator drawDateGenerator = new DrawDateGenerator(clock);
 
     @Test
     public void shouldReturnSuccessResponseWhenUserGaveExactlySixCorrectNumbers() {
         Set<Integer> numbers = Set.of(1, 2, 3, 4, 5, 6);
-        LocalDateTime nextDrawDate = drawDateGenerator.getNextDrawDate();
+        LocalDateTime drawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
+        when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(drawDate);
 
         NumberReceiverResponseDto response = numberReceiverFacade.inputNumbers(numbers);
 
         TicketDto generatedTicket = TicketDto.builder()
                 .ticketId(response.ticketDto().ticketId())
-                .drawDate(nextDrawDate)
+                .drawDate(response.ticketDto().drawDate())
                 .numbers(numbers)
                 .build();
-
         NumberReceiverResponseDto expectedResponse = new NumberReceiverResponseDto(generatedTicket, ValidationResult.INPUT_SUCCESS.info);
         assertThat(response).isEqualTo(expectedResponse);
     }
@@ -84,9 +88,12 @@ class NumberReceiverFacadeTest {
     @Test
     public void shouldReturnSaveToDatabaseWhenUserGaveExactlySixNumbers() {
         Set<Integer> numbers = Set.of(1, 2, 3, 4, 5, 6);
+        LocalDateTime drawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
+        when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(drawDate);
+
         NumberReceiverResponseDto result = numberReceiverFacade.inputNumbers(numbers);
-        LocalDateTime drawDate = drawDateGenerator.getNextDrawDate();
         List<TicketDto> ticketDtos = numberReceiverFacade.getUserNumbers(drawDate);
+
         assertThat(ticketDtos).contains(
                 TicketDto.builder()
                         .ticketId(result.ticketDto().ticketId())
@@ -97,42 +104,21 @@ class NumberReceiverFacadeTest {
     }
 
     @Test
-    public void shouldReturnCorrectDrawDate() {
-        Clock clock = Clock.fixed(LocalDateTime.of(2025, 2, 26, 10, 0, 0).toInstant(ZoneOffset.UTC), ZoneId.of("Europe/London"));
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, clock, ticketRepository);
-        Set<Integer> numbersFromUser = Set.of(1, 2, 3, 4, 5, 6);
-
-        LocalDateTime testedDrawDate = numberReceiverFacade.inputNumbers(numbersFromUser).ticketDto().drawDate();
-
-        LocalDateTime expectedDrawDate = LocalDateTime.of(2025, 3, 1, 12, 0, 0);
-        assertThat(expectedDrawDate).isEqualTo(testedDrawDate);
-    }
-
-    @Test
-    public void shouldReturnNextDrawDateWhenThereIsExactTimeOfTheDraw() {
-        Clock clock = Clock.fixed(LocalDateTime.of(2025, 3, 1, 12, 0, 0).toInstant(ZoneOffset.UTC), ZoneId.of("Europe/London"));
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, clock, ticketRepository);
-        Set<Integer> numbersFromUser = Set.of(1, 2, 3, 4, 5, 6);
-
-        LocalDateTime testedDrawDate = numberReceiverFacade.inputNumbers(numbersFromUser).ticketDto().drawDate();
-
-        LocalDateTime expectedDrawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
-
-        assertThat(expectedDrawDate).isEqualTo(testedDrawDate);
-    }
-
-    @Test
     public void shouldReturnTicketsWithCorrectDrawDate() {
-        Instant fixedInstant = LocalDateTime.of(2025, 2, 26, 12, 0, 0).toInstant(ZoneOffset.UTC);
+        Instant fixedInstant = LocalDateTime.of(2025, 3, 5, 12, 0, 0).toInstant(ZoneOffset.UTC);
         ZoneId of = ZoneId.of("Europe/London");
         AdjustableClock clock = new AdjustableClock(fixedInstant, of);
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, clock, ticketRepository);
+        LocalDateTime correctDrawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
+        when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(correctDrawDate);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, ticketRepository, drawDateRetrieverFacade);
         NumberReceiverResponseDto numberReceiverResponseDto = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
         clock.plusDays(1);
         NumberReceiverResponseDto numberReceiverResponseDto1 = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
         clock.plusDays(1);
         NumberReceiverResponseDto numberReceiverResponseDto2 = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
         clock.plusDays(1);
+        correctDrawDate = LocalDateTime.of(2025, 3, 15, 12, 0, 0);
+        when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(correctDrawDate);
         NumberReceiverResponseDto numberReceiverResponseDto3 = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
         TicketDto ticketDto = numberReceiverResponseDto.ticketDto();
         TicketDto ticketDto1 = numberReceiverResponseDto1.ticketDto();
@@ -149,7 +135,9 @@ class NumberReceiverFacadeTest {
         Instant fixedInstant = LocalDateTime.of(2025, 2, 26, 11, 50, 0).toInstant(ZoneOffset.UTC);
         ZoneId of = ZoneId.of("Europe/London");
         AdjustableClock clock = new AdjustableClock(fixedInstant, of);
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, clock, ticketRepository);
+        LocalDateTime drawDate = LocalDateTime.now(clock);
+        when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(drawDate);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, ticketRepository, drawDateRetrieverFacade);
         NumberReceiverResponseDto numberReceiverResponseDto = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
         clock.plusDays(1);
         NumberReceiverResponseDto numberReceiverResponseDto1 = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
@@ -169,9 +157,9 @@ class NumberReceiverFacadeTest {
 
     @Test
     public void shouldReturnEmptyCollectionsIfThereAreNoTickets() {
-        Clock clock = Clock.fixed(LocalDateTime.of(2025, 2, 26, 12, 0, 0).toInstant(ZoneOffset.UTC), ZoneId.of("Europe/London"));
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, clock, ticketRepository);
-        LocalDateTime drawDate = LocalDateTime.now(clock);
+        LocalDateTime drawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
+        when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(drawDate);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, ticketRepository, drawDateRetrieverFacade);
 
         List<TicketDto> allTicketsByDate = numberReceiverFacade.retrieveAllTicketsByNextDrawDate(drawDate);
 
@@ -180,8 +168,9 @@ class NumberReceiverFacadeTest {
 
     @Test
     public void shouldReturnEmptyCollectionsIfDateIsAfterNextDrawDate() {
-        Clock clock = Clock.fixed(LocalDateTime.of(2025, 3, 2, 12, 0, 0).toInstant(ZoneOffset.UTC), ZoneId.of("Europe/London"));
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, clock, ticketRepository);
+        LocalDateTime date = LocalDateTime.of(2025, 3, 9, 12, 0, 0);
+        when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(date);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, ticketRepository, drawDateRetrieverFacade);
         NumberReceiverResponseDto numberReceiverResponseDto = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
 
         LocalDateTime drawDate = numberReceiverResponseDto.ticketDto().drawDate();
