@@ -1,6 +1,6 @@
 package org.example.domain.winningnumbersgenerator;
 
-import org.example.domain.numberreceiver.NumberReceiverFacade;
+import org.example.domain.drawdateretriever.DrawDateRetrieverFacade;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,18 +38,18 @@ public class WinningNumbersGeneratorConfiguration {
     WinningNumbersGeneratorFacade winningNumbersGeneratorFacade(
             RandomNumbersGenerable generator,
             WinningNumbersRepository winningNumbersRepository,
-            NumberReceiverFacade numberReceiverFacade,
+            DrawDateRetrieverFacade drawDateRetrieverFacade,
             WinningNumbersGeneratorFacadeConfigurationProperties properties
     ) {
         WinningNumberValidator winningNumberValidator = new WinningNumberValidator();
         return new WinningNumbersGeneratorFacade(
-                winningNumberValidator, numberReceiverFacade, generator, winningNumbersRepository, properties);
+                winningNumberValidator, drawDateRetrieverFacade, generator, winningNumbersRepository, properties);
     }
 
     WinningNumbersGeneratorFacade createForTest(
             RandomNumbersGenerable generator,
             WinningNumbersRepository winningNumbersRepository,
-            NumberReceiverFacade numberReceiverFacade
+            DrawDateRetrieverFacade drawDateRetrieverFacade
     ) {
         WinningNumbersGeneratorFacadeConfigurationProperties properties = WinningNumbersGeneratorFacadeConfigurationProperties
                 .builder()
@@ -60,7 +60,7 @@ public class WinningNumbersGeneratorConfiguration {
         return winningNumbersGeneratorFacade(
                 generator,
                 winningNumbersRepository,
-                numberReceiverFacade,
+                drawDateRetrieverFacade,
                 properties
         );
     }

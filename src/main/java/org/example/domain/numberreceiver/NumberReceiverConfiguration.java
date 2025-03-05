@@ -1,19 +1,14 @@
 package org.example.domain.numberreceiver;
 
+import org.example.domain.drawdateretriever.DrawDateRetrieverFacade;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Configuration
 public class NumberReceiverConfiguration {
-    @Bean
-    Clock clock() {
-        return Clock.systemUTC();
-    }
-
     @Bean
     IdGenerable idGenerable() {
         return new IdGenerator();
@@ -40,9 +35,12 @@ public class NumberReceiverConfiguration {
     }
 
     @Bean
-    NumberReceiverFacade numberReceiverFacade(IdGenerable idGenerator, Clock clock, TicketRepository ticketRepository) {
+    NumberReceiverFacade numberReceiverFacade(
+            IdGenerable idGenerator,
+            TicketRepository ticketRepository,
+            DrawDateRetrieverFacade drawDateRetrieverFacade
+    ) {
         WinningNumberValidator winningNumberValidator = new WinningNumberValidator();
-        DrawDateGenerator drawDateGenerator = new DrawDateGenerator(clock);
-        return new NumberReceiverFacade(winningNumberValidator, drawDateGenerator, idGenerator, ticketRepository);
+        return new NumberReceiverFacade(winningNumberValidator, idGenerator, ticketRepository, drawDateRetrieverFacade);
     }
 }

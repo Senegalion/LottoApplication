@@ -1,6 +1,7 @@
 package org.example.domain.numberreceiver;
 
 import lombok.AllArgsConstructor;
+import org.example.domain.drawdateretriever.DrawDateRetrieverFacade;
 import org.example.domain.numberreceiver.dto.NumberReceiverResponseDto;
 import org.example.domain.numberreceiver.dto.TicketDto;
 
@@ -15,9 +16,9 @@ import static org.example.domain.numberreceiver.ValidationResult.INPUT_SUCCESS;
 @AllArgsConstructor
 public class NumberReceiverFacade {
     private WinningNumberValidator winningNumberValidator;
-    private final DrawDateGenerator drawDateGenerator;
     private final IdGenerable idGenerator;
     private TicketRepository ticketRepository;
+    private final DrawDateRetrieverFacade drawDateRetrieverFacade;
 
     public NumberReceiverResponseDto inputNumbers(Set<Integer> numbers) {
         List<ValidationResult> correctNumbers = winningNumberValidator.filterNumbers(numbers);
@@ -26,7 +27,7 @@ public class NumberReceiverFacade {
             return new NumberReceiverResponseDto(null, resultMessage);
         }
 
-        LocalDateTime drawDate = drawDateGenerator.getNextDrawDate();
+        LocalDateTime drawDate = retrieveNextDrawDate();
         String ticketId = idGenerator.getId();
 
         TicketDto generatedTicket = TicketDto.builder()
@@ -57,16 +58,16 @@ public class NumberReceiverFacade {
     }
 
     public LocalDateTime retrieveNextDrawDate() {
-        return drawDateGenerator.getNextDrawDate();
+        return drawDateRetrieverFacade.retrieveNextDrawDate();
     }
 
     public List<TicketDto> retrieveAllTicketsByNextDrawDate() {
-        LocalDateTime nextDrawDate = drawDateGenerator.getNextDrawDate();
+        LocalDateTime nextDrawDate = retrieveNextDrawDate();
         return retrieveAllTicketsByNextDrawDate(nextDrawDate);
     }
 
     public List<TicketDto> retrieveAllTicketsByNextDrawDate(LocalDateTime date) {
-        LocalDateTime nextDrawDate = drawDateGenerator.getNextDrawDate();
+        LocalDateTime nextDrawDate = retrieveNextDrawDate();
         if (date.isAfter(nextDrawDate)) {
             return Collections.emptyList();
         }

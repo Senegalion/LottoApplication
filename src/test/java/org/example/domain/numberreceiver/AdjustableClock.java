@@ -1,4 +1,4 @@
-package org.example.domain;
+package org.example.domain.numberreceiver;
 
 import java.time.*;
 
