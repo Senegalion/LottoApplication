@@ -4,11 +4,11 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb://admin:admin@localhost:27017/lotto-web
+      uri: mongodb://admin:admin@localhost:27016/lotto-web
 
 lotto:
   number-generator:
-    lotteryRunOccurrence: "0 0 12 * * 6"
+    lotteryRunOccurrence: "* * * * * *"
     facade:
       numberOfNumbers: 25
       minimumNumber: 1
