@@ -22,18 +22,8 @@ public class PlayerRepositoryTestImpl implements PlayerRepository {
     }
 
     @Override
-    public Optional<Player> findById(String id) {
+    public Optional<Player> findByPlayerId(String id) {
         return java.util.Optional.ofNullable(players.get(id));
-    }
-
-    @Override
-    public boolean existsById(String s) {
-        return false;
-    }
-
-    @Override
-    public <S extends Player> S save(S entity) {
-        return null;
     }
 
     @Override
@@ -44,6 +34,51 @@ public class PlayerRepositoryTestImpl implements PlayerRepository {
     @Override
     public List<Player> findAll() {
         return null;
+    }
+
+    @Override
+    public List<Player> findAll(Sort sort) {
+        return null;
+    }
+
+    @Override
+    public <S extends Player> S insert(S entity) {
+        return null;
+    }
+
+    @Override
+    public <S extends Player> List<S> insert(Iterable<S> entities) {
+        return null;
+    }
+
+    @Override
+    public <S extends Player> List<S> findAll(Example<S> example) {
+        return null;
+    }
+
+    @Override
+    public <S extends Player> List<S> findAll(Example<S> example, Sort sort) {
+        return null;
+    }
+
+    @Override
+    public Page<Player> findAll(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public <S extends Player> S save(S entity) {
+        return null;
+    }
+
+    @Override
+    public Optional<Player> findById(String s) {
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean existsById(String s) {
+        return false;
     }
 
     @Override
@@ -82,38 +117,8 @@ public class PlayerRepositoryTestImpl implements PlayerRepository {
     }
 
     @Override
-    public List<Player> findAll(Sort sort) {
-        return null;
-    }
-
-    @Override
-    public Page<Player> findAll(Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public <S extends Player> S insert(S entity) {
-        return null;
-    }
-
-    @Override
-    public <S extends Player> List<S> insert(Iterable<S> entities) {
-        return null;
-    }
-
-    @Override
     public <S extends Player> Optional<S> findOne(Example<S> example) {
         return Optional.empty();
-    }
-
-    @Override
-    public <S extends Player> List<S> findAll(Example<S> example) {
-        return null;
-    }
-
-    @Override
-    public <S extends Player> List<S> findAll(Example<S> example, Sort sort) {
-        return null;
     }
 
     @Override

@@ -39,7 +39,7 @@ public class InputData {
     }
 
     public static ResultDTO getResultDto1(String id) {
-        LocalDateTime drawDate = LocalDateTime.of(2025, 2, 27, 12, 0, 0);
+        LocalDateTime drawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
         return ResultDTO.builder()
                 .resultId(id)
                 .numbers(Set.of(7, 8, 9, 10, 11, 12))
@@ -50,7 +50,7 @@ public class InputData {
     }
 
     public static List<TicketDto> retrieveAllTicketsByNextDrawDate1(String id) {
-        LocalDateTime drawDate = LocalDateTime.of(2025, 2, 27, 12, 0, 0);
+        LocalDateTime drawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
         return List.of(TicketDto.builder()
                         .ticketId(id)
                         .numbers(Set.of(7, 8, 9, 10, 11, 12))

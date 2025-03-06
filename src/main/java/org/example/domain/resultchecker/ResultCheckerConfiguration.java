@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ResultCheckerConfiguration {
     @Bean
-    ResultCheckerFacade createForTest(NumberReceiverFacade receiverFacade, WinningNumbersGeneratorFacade generatorFacade, PlayerRepository playerRepository) {
+    ResultCheckerFacade resultCheckerFacade(NumberReceiverFacade receiverFacade, WinningNumbersGeneratorFacade generatorFacade, PlayerRepository playerRepository) {
         WinnersRetriever winnersRetriever = new WinnersRetriever();
         return new ResultCheckerFacade(receiverFacade, generatorFacade, playerRepository, winnersRetriever);
     }

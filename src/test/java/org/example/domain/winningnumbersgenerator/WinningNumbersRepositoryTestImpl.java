@@ -28,8 +28,13 @@ public class WinningNumbersRepositoryTestImpl implements WinningNumbersRepositor
 
     @Override
     public <S extends WinningNumbers> S save(S entity) {
-        winningNumbers.put(entity.drawDate(), entity);
-        return entity;
+        WinningNumbers winningNumbers1 = WinningNumbers.builder()
+                .winningNumbersId("001")
+                .drawDate(entity.drawDate())
+                .winningNumbers(entity.winningNumbers())
+                .build();
+        winningNumbers.put(winningNumbers1.drawDate(), winningNumbers1);
+        return (S) winningNumbers1;
     }
 
     @Override

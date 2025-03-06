@@ -7,6 +7,7 @@ import org.example.domain.winningnumbersgenerator.WinningNumbersGeneratorFacade;
 import org.example.domain.winningnumbersgenerator.dto.WinningNumbersDto;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -30,7 +31,7 @@ public class ResultCheckerFacadeTest {
         );
 
         ResultCheckerFacade resultCheckerFacade = new ResultCheckerConfiguration()
-                .createForTest(numberReceiverFacade, winningNumbersGeneratorFacade, playerRepository);
+                .resultCheckerFacade(numberReceiverFacade, winningNumbersGeneratorFacade, playerRepository);
 
         PlayersDto playersDto = resultCheckerFacade.generateWinners();
 
@@ -49,7 +50,7 @@ public class ResultCheckerFacadeTest {
                 .winningNumbers(null)
                 .build());
         ResultCheckerFacade resultCheckerFacade = new ResultCheckerConfiguration()
-                .createForTest(numberReceiverFacade, winningNumbersGeneratorFacade, playerRepository);
+                .resultCheckerFacade(numberReceiverFacade, winningNumbersGeneratorFacade, playerRepository);
 
         PlayersDto playersDto = resultCheckerFacade.generateWinners();
 
@@ -63,7 +64,7 @@ public class ResultCheckerFacadeTest {
                 .winningNumbers(Set.of())
                 .build());
         ResultCheckerFacade resultCheckerFacade = new ResultCheckerConfiguration()
-                .createForTest(numberReceiverFacade, winningNumbersGeneratorFacade, playerRepository);
+                .resultCheckerFacade(numberReceiverFacade, winningNumbersGeneratorFacade, playerRepository);
 
         PlayersDto playersDto = resultCheckerFacade.generateWinners();
 
@@ -76,11 +77,13 @@ public class ResultCheckerFacadeTest {
         String id = "001";
         when(winningNumbersGeneratorFacade.generateWinningNumbers()).thenReturn(WinningNumbersDto.builder()
                 .winningNumbers(Set.of(1, 2, 3, 4, 5, 6))
+                .drawDate(LocalDateTime.of(2025, 3, 8, 12, 0, 0))
                 .build());
         when(numberReceiverFacade.retrieveAllTicketsByNextDrawDate()).thenReturn(
                 InputData.retrieveAllTicketsByNextDrawDate1(id)
         );
-        ResultCheckerFacade resultCheckerFacade = new ResultCheckerConfiguration().createForTest(
+        WinningNumbersDto winningNumbersDto = winningNumbersGeneratorFacade.generateWinningNumbers();
+        ResultCheckerFacade resultCheckerFacade = new ResultCheckerConfiguration().resultCheckerFacade(
                 numberReceiverFacade, winningNumbersGeneratorFacade, playerRepository);
         resultCheckerFacade.generateWinners();
 
@@ -98,7 +101,7 @@ public class ResultCheckerFacadeTest {
                 .build());
         when(numberReceiverFacade.retrieveAllTicketsByNextDrawDate()).thenReturn(
                 InputData.retrieveAllTicketsByNextDrawDate1(notExistingId));
-        ResultCheckerFacade resultCheckerFacade = new ResultCheckerConfiguration().createForTest(
+        ResultCheckerFacade resultCheckerFacade = new ResultCheckerConfiguration().resultCheckerFacade(
                 numberReceiverFacade, winningNumbersGeneratorFacade, playerRepository);
 
         assertThrows(PlayerNotFoundException.class, () -> resultCheckerFacade.findById(notExistingId));
