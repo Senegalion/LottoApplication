@@ -5,10 +5,12 @@ spring:
   data:
     mongodb:
       uri: mongodb://admin:admin@localhost:27016/lotto-web
+  main:
+    allow-bean-definition-overriding: true
 
 lotto:
   number-generator:
-    lotteryRunOccurrence: "* * * * * *"
+    lotteryRunOccurrence: "0 0 12 * * 6"
     facade:
       numberOfNumbers: 25
       minimumNumber: 1
