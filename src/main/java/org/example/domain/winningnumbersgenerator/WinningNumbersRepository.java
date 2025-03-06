@@ -1,12 +1,14 @@
 package org.example.domain.winningnumbersgenerator;
 
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public interface WinningNumbersRepository {
-    Optional<WinningNumbers> findNumbersByDate(LocalDateTime date);
+@Repository
+public interface WinningNumbersRepository extends MongoRepository<WinningNumbers, String> {
+    Optional<WinningNumbers> findNumbersByDrawDate(LocalDateTime date);
 
-    boolean existsByDate(LocalDateTime nextDrawDate);
-
-    WinningNumbers save(WinningNumbers winningNumbers);
+    boolean existsByDrawDate(LocalDateTime nextDrawDate);
 }

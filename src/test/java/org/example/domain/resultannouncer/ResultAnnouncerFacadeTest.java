@@ -24,7 +24,7 @@ class ResultAnnouncerFacadeTest {
     public void shouldReturnResponseWithLoseMessageIfTicketIsNotWinningTicket() {
         String id = "123";
         ResultAnnouncerFacade resultAnnouncerFacade = new ResultAnnouncerConfiguration()
-                .createForTest(resultCheckerFacade, responseRepository, Clock.systemUTC());
+                .resultAnnouncerFacade(resultCheckerFacade, responseRepository, Clock.systemUTC());
         ResultDTO resultDto = InputData.getResultDto(id);
         when(resultCheckerFacade.findById(id)).thenReturn(resultDto);
 
@@ -39,7 +39,7 @@ class ResultAnnouncerFacadeTest {
     public void shouldReturnResponseWithWinMessageIfTicketIsWinningTicket() {
         String id = "123";
         ResultAnnouncerFacade resultAnnouncerFacade = new ResultAnnouncerConfiguration()
-                .createForTest(resultCheckerFacade, responseRepository, Clock.systemUTC());
+                .resultAnnouncerFacade(resultCheckerFacade, responseRepository, Clock.systemUTC());
         ResultDTO resultDto = InputData.getResultDto1(id);
         when(resultCheckerFacade.findById(id)).thenReturn(resultDto);
 
@@ -55,7 +55,7 @@ class ResultAnnouncerFacadeTest {
         String id = "123";
         Clock clock = Clock.fixed(LocalDateTime.of(2025, 2, 1, 12, 0, 0).toInstant(ZoneOffset.UTC), ZoneId.systemDefault());
         ResultAnnouncerFacade resultAnnouncerFacade = new ResultAnnouncerConfiguration()
-                .createForTest(resultCheckerFacade, responseRepository, clock);
+                .resultAnnouncerFacade(resultCheckerFacade, responseRepository, clock);
         ResultDTO resultDto = InputData.getResultDto2(id);
         when(resultCheckerFacade.findById(id)).thenReturn(resultDto);
 
@@ -70,7 +70,7 @@ class ResultAnnouncerFacadeTest {
     public void shouldReturnResponseWithIdDoesNotExistMessageIfIdDoesNotExist() {
         String id = "123";
         ResultAnnouncerFacade resultAnnouncerFacade = new ResultAnnouncerConfiguration()
-                .createForTest(resultCheckerFacade, responseRepository, Clock.systemUTC());
+                .resultAnnouncerFacade(resultCheckerFacade, responseRepository, Clock.systemUTC());
         when(resultCheckerFacade.findById(id)).thenReturn(null);
 
         ResultAnnouncerResponseDto resultAnnouncerResponseDto = resultAnnouncerFacade.checkResult(id);
@@ -85,7 +85,7 @@ class ResultAnnouncerFacadeTest {
         ResultDTO resultDto = InputData.getResultDto2(id);
         when(resultCheckerFacade.findById(id)).thenReturn(resultDto);
         ResultAnnouncerFacade resultAnnouncerFacade = new ResultAnnouncerConfiguration()
-                .createForTest(resultCheckerFacade, responseRepository, Clock.systemUTC());
+                .resultAnnouncerFacade(resultCheckerFacade, responseRepository, Clock.systemUTC());
         ResultAnnouncerResponseDto resultAnnouncerResponseDto1 = resultAnnouncerFacade.checkResult(id);
         String checkedId = resultAnnouncerResponseDto1.responseDto().id();
 
