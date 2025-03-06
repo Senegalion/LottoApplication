@@ -47,7 +47,10 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                 });
 
         // step 3: user made POST /inputNumbers with 6 numbers (1, 2, 3, 4, 5, 6) at 4-03-2025 10:00 and system returned OK(200) with message: “success” and Ticket (DrawDate:8.03.2025 12:00 (Saturday), TicketId: sampleTicketId)
+
         // step 4: 3 days and 1 minute passed, and it is 1 minute after the draw date (8.03.2025 12:01)
+        clock.plusDaysAndMinutes(3, 1);
+
         // step 5: system generated result for TicketId: sampleTicketId with draw date 8.03.2025 12:00, and saved it with 6 hits
         // step 6: 3 hours passed, and it is 1 minute after announcement time (8.03.2025 15:01)
         // step 7: user made GET /results/sampleTicketId and system returned 200 (OK)
