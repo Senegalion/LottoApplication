@@ -26,24 +26,25 @@ public class WinningNumbersGeneratorFacade {
                 );
         Set<Integer> winningNumbers = sixRandomNumbersDto.numbers();
         winningNumberValidator.validate(winningNumbers);
-        winningNumbersRepository.save(WinningNumbers.builder()
+        WinningNumbers winningNumbersDocument = WinningNumbers.builder()
                 .drawDate(nextDrawDate)
                 .winningNumbers(winningNumbers)
-                .build());
+                .build();
+        WinningNumbers savedWinningNumbers = winningNumbersRepository.save(winningNumbersDocument);
         return WinningNumbersDto.builder()
-                .drawDate(nextDrawDate)
-                .winningNumbers(winningNumbers)
+                .drawDate(savedWinningNumbers.drawDate())
+                .winningNumbers(savedWinningNumbers.winningNumbers())
                 .build();
     }
 
     public WinningNumbersDto retrieveWinningNumberByDate(LocalDateTime date) {
-        WinningNumbers winningNumbers = winningNumbersRepository.findNumbersByDate(date)
+        WinningNumbers winningNumbers = winningNumbersRepository.findNumbersByDrawDate(date)
                 .orElseThrow(() -> new WinningNumbersNotFoundException("Not Found"));
         return WinningNumbersMapper.mapFromWinningNumbers(winningNumbers);
     }
 
     public boolean areWinningNumbersGeneratedByDrawDate() {
         LocalDateTime nextDrawDate = drawDateRetrieverFacade.retrieveNextDrawDate();
-        return winningNumbersRepository.existsByDate(nextDrawDate);
+        return winningNumbersRepository.existsByDrawDate(nextDrawDate);
     }
 }
