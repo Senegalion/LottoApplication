@@ -16,19 +16,14 @@ public class PlayerRepositoryTestImpl implements PlayerRepository {
     Map<String, Player> players = new ConcurrentHashMap<>();
 
     @Override
-    public List<Player> saveAll(List<Player> players) {
-        players.forEach(player -> this.players.put(player.playerId(), player));
-        return players;
-    }
-
-    @Override
     public Optional<Player> findByPlayerId(String id) {
         return java.util.Optional.ofNullable(players.get(id));
     }
 
     @Override
     public <S extends Player> List<S> saveAll(Iterable<S> entities) {
-        return null;
+        entities.forEach(entity -> this.players.put(entity.playerId(), entity));
+        return (List<S>) entities;
     }
 
     @Override
