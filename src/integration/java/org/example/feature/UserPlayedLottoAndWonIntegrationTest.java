@@ -54,7 +54,7 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                     }
                 });
 
-        // step 3: user made POST /inputNumbers with 6 numbers (1, 2, 3, 4, 5, 6) at 4-03-2025 10:00 and system returned OK(200) with message: “success” and Ticket (DrawDate:8.03.2025 12:00 (Saturday), TicketId: sampleTicketId)
+        // step 3: user made POST /inputNumbers with 6 numbers (1, 2, 3, 4, 5, 6) at 5-03-2025 12:00 and system returned OK(200) with message: “success” and Ticket (DrawDate:8.03.2025 12:00 (Saturday), TicketId: sampleTicketId)
         ResultActions resultActions = mockMvc.perform(post("/inputNumbers")
                 .content("""
                         {
