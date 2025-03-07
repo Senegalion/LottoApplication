@@ -56,7 +56,8 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                         {
                         "inputNumbers" : [1, 2, 3, 4, 5, 6]
                         }
-                        """)
+                        """.trim()
+                )
                 .contentType(MediaType.APPLICATION_JSON)
         );
         resultActions.andExpect(status().isOk());
