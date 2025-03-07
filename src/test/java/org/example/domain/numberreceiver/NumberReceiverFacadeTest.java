@@ -20,10 +20,7 @@ import static org.mockito.Mockito.when;
 class NumberReceiverFacadeTest {
     private final TicketRepository ticketRepository = new TicketRepositoryTestImpl();
     DrawDateRetrieverFacade drawDateRetrieverFacade = mock(DrawDateRetrieverFacade.class);
-
-    IdGenerable idGenerator = new IdGenerator();
     NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(
-            idGenerator,
             ticketRepository,
             drawDateRetrieverFacade
     );
@@ -129,7 +126,7 @@ class NumberReceiverFacadeTest {
         AdjustableClock clock = new AdjustableClock(fixedInstant, of);
         LocalDateTime correctDrawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(correctDrawDate);
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, ticketRepository, drawDateRetrieverFacade);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(ticketRepository, drawDateRetrieverFacade);
         NumberReceiverResponseDto numberReceiverResponseDto = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
         clock.plusDays(1);
         NumberReceiverResponseDto numberReceiverResponseDto1 = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
@@ -159,7 +156,7 @@ class NumberReceiverFacadeTest {
         AdjustableClock clock = new AdjustableClock(fixedInstant, of);
         LocalDateTime drawDate = LocalDateTime.now(clock);
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(drawDate);
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, ticketRepository, drawDateRetrieverFacade);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(ticketRepository, drawDateRetrieverFacade);
         NumberReceiverResponseDto numberReceiverResponseDto = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
         clock.plusDays(1);
         NumberReceiverResponseDto numberReceiverResponseDto1 = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
@@ -184,7 +181,7 @@ class NumberReceiverFacadeTest {
         // given
         LocalDateTime drawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(drawDate);
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, ticketRepository, drawDateRetrieverFacade);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(ticketRepository, drawDateRetrieverFacade);
 
         // when
         List<TicketDto> allTicketsByDate = numberReceiverFacade.retrieveAllTicketsByNextDrawDate(drawDate);
@@ -198,7 +195,7 @@ class NumberReceiverFacadeTest {
         // given
         LocalDateTime date = LocalDateTime.of(2025, 3, 9, 12, 0, 0);
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(date);
-        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, ticketRepository, drawDateRetrieverFacade);
+        NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(ticketRepository, drawDateRetrieverFacade);
         NumberReceiverResponseDto numberReceiverResponseDto = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
 
         // when

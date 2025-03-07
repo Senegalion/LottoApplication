@@ -7,17 +7,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class NumberReceiverConfiguration {
     @Bean
-    IdGenerable idGenerable() {
-        return new IdGenerator();
-    }
-
-    @Bean
     NumberReceiverFacade numberReceiverFacade(
-            IdGenerable idGenerator,
             TicketRepository ticketRepository,
             DrawDateRetrieverFacade drawDateRetrieverFacade
     ) {
         WinningNumberValidator winningNumberValidator = new WinningNumberValidator();
-        return new NumberReceiverFacade(winningNumberValidator, idGenerator, ticketRepository, drawDateRetrieverFacade);
+        return new NumberReceiverFacade(winningNumberValidator, ticketRepository, drawDateRetrieverFacade);
     }
 }

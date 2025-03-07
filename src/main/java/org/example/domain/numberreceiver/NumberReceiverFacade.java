@@ -16,7 +16,6 @@ import static org.example.domain.numberreceiver.ValidationResult.INPUT_SUCCESS;
 @AllArgsConstructor
 public class NumberReceiverFacade {
     private WinningNumberValidator winningNumberValidator;
-    private final IdGenerable idGenerator;
     private TicketRepository ticketRepository;
     private final DrawDateRetrieverFacade drawDateRetrieverFacade;
 
