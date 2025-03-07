@@ -28,7 +28,7 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
     WinningNumbersGeneratorFacade winningNumbersGeneratorFacade;
 
     @Test
-    public void shouldUserWinAndSystemShouldGenerateWinners() throws Exception {
+    public void should_user_win_and_system_should_generate_winners() throws Exception {
         // step 1: external service returns 6 random numbers (1,2,3,4,5,6)
         wireMockServer.stubFor(WireMock.get("/api/v1.0/random?min=1&max=99&count=25")
                 .willReturn(WireMock.aResponse()
@@ -55,6 +55,8 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                 });
 
         // step 3: user made POST /inputNumbers with 6 numbers (1, 2, 3, 4, 5, 6) at 5-03-2025 12:00 and system returned OK(200) with message: “success” and Ticket (DrawDate:8.03.2025 12:00 (Saturday), TicketId: sampleTicketId)
+        // given
+        // when
         ResultActions resultActions = mockMvc.perform(post("/inputNumbers")
                 .content("""
                         {
@@ -68,6 +70,7 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
         String json = mvcResult.getResponse().getContentAsString();
         NumberReceiverResponseDto numberReceiverResponseDto = objectMapper.readValue(json, NumberReceiverResponseDto.class);
 
+        // then
         assertAll(
                 () -> assertThat(numberReceiverResponseDto.ticketDto().drawDate()).isEqualTo(drawDate),
                 () -> assertThat(numberReceiverResponseDto.ticketDto().ticketId()).isNotNull(),
