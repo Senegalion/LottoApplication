@@ -7,6 +7,9 @@ spring:
       uri: mongodb://admin:admin@localhost:27016/lotto-web
   main:
     allow-bean-definition-overriding: true
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
 
 lotto:
   number-generator:
