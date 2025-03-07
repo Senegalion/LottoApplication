@@ -7,12 +7,16 @@ import org.example.domain.winningnumbersgenerator.WinningNumbersNotFoundExceptio
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
 
@@ -20,7 +24,7 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
     WinningNumbersGeneratorFacade winningNumbersGeneratorFacade;
 
     @Test
-    public void shouldUserWinAndSystemShouldGenerateWinners() {
+    public void shouldUserWinAndSystemShouldGenerateWinners() throws Exception {
         // step 1: external service returns 6 random numbers (1,2,3,4,5,6)
         wireMockServer.stubFor(WireMock.get("/api/v1.0/random?min=1&max=99&count=25")
                 .willReturn(WireMock.aResponse()
@@ -47,6 +51,15 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                 });
 
         // step 3: user made POST /inputNumbers with 6 numbers (1, 2, 3, 4, 5, 6) at 4-03-2025 10:00 and system returned OK(200) with message: “success” and Ticket (DrawDate:8.03.2025 12:00 (Saturday), TicketId: sampleTicketId)
+        ResultActions resultActions = mockMvc.perform(post("/inputNumbers")
+                .content("""
+                        {
+                        "inputNumbers" : [1, 2, 3, 4, 5, 6]
+                        }
+                        """)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        resultActions.andExpect(status().isOk());
 
         // step 4: 3 days and 1 minute passed, and it is 1 minute after the draw date (8.03.2025 12:01)
         clock.plusDaysAndMinutes(3, 1);
