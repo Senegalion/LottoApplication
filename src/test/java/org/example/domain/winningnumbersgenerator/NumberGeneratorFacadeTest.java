@@ -20,7 +20,7 @@ class NumberGeneratorFacadeTest {
     DrawDateRetrieverFacade drawDateRetrieverFacade = mock(DrawDateRetrieverFacade.class);
 
     @Test
-    public void shouldReturnSetOfRequiredSize() {
+    public void should_return_set_of_required_size() {
         RandomNumbersGenerable generator = new WinningNumbersGeneratorTestImpl();
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(LocalDateTime.now());
         WinningNumbersGeneratorFacade winningNumbersGenerator = new WinningNumbersGeneratorConfiguration().createForTest(generator, winningNumbersRepository, drawDateRetrieverFacade);
@@ -31,13 +31,16 @@ class NumberGeneratorFacadeTest {
     }
 
     @Test
-    public void shouldReturnSetOfRequiredSizeWithinRequiredRange() {
+    public void should_return_set_of_required_size_within_required_range() {
+        // given
         RandomNumbersGenerable generator = new WinningNumbersGeneratorTestImpl();
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(LocalDateTime.now());
         WinningNumbersGeneratorFacade winningNumbersGenerator = new WinningNumbersGeneratorConfiguration().createForTest(generator, winningNumbersRepository, drawDateRetrieverFacade);
 
+        // when
         WinningNumbersDto generatedWinningNumbersDto = winningNumbersGenerator.generateWinningNumbers();
 
+        // then
         Set<Integer> winningNumbers = generatedWinningNumbersDto.winningNumbers();
         boolean numbersInRange = winningNumbers.stream()
                 .allMatch(number -> number >= WinningNumbersInfo.MINIMUM_VALUE.number
@@ -47,30 +50,36 @@ class NumberGeneratorFacadeTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenNumberNotInRange() {
+    public void should_throw_exception_when_number_not_in_range() {
+        // given
         Set<Integer> numbers = Set.of(-1, 2, 3, 4, 5, 200);
         RandomNumbersGenerable generator = new WinningNumbersGeneratorTestImpl(numbers);
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(LocalDateTime.now());
         WinningNumbersGeneratorFacade winningNumbersGenerator = new WinningNumbersGeneratorConfiguration().createForTest(generator, winningNumbersRepository, drawDateRetrieverFacade);
 
+        // when
+        // then
         assertThrows(IllegalStateException.class, winningNumbersGenerator::generateWinningNumbers, "Number out of range!");
     }
 
     @Test
-    public void shouldReturnCollectionOfUniqueValues() {
+    public void should_return_collection_of_unique_values() {
+        // given
         RandomNumbersGenerable generator = new WinningNumbersGeneratorTestImpl();
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(LocalDateTime.now());
         WinningNumbersGeneratorFacade numbersGenerator = new WinningNumbersGeneratorConfiguration().createForTest(generator, winningNumbersRepository, drawDateRetrieverFacade);
 
+        // when
         WinningNumbersDto generatedWinningNumbersDto = numbersGenerator.generateWinningNumbers();
 
+        // then
         int generatedNumbersSize = new HashSet<>(generatedWinningNumbersDto.winningNumbers()).size();
         assertThat(generatedNumbersSize).isEqualTo(WinningNumbersInfo.SIZE.number);
     }
 
     @Test
-    public void shouldReturnWinningNumbersByGivenDate() {
-
+    public void should_return_winning_numbers_by_given_date() {
+        // given
         LocalDateTime drawDate = LocalDateTime.of(2025, 2, 27, 12, 0, 0);
         Set<Integer> generatedWinningNumbers = Set.of(1, 2, 3, 4, 5, 6);
         String winningNumbersId = UUID.randomUUID().toString();
@@ -84,8 +93,10 @@ class NumberGeneratorFacadeTest {
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(drawDate);
         WinningNumbersGeneratorFacade numbersGenerator = new WinningNumbersGeneratorConfiguration().createForTest(generator, winningNumbersRepository, drawDateRetrieverFacade);
 
+        // when
         WinningNumbersDto winningNumbersDto = numbersGenerator.retrieveWinningNumberByDate(drawDate);
 
+        // then
         WinningNumbersDto expectedWinningNumbersDto = WinningNumbersDto.builder()
                 .drawDate(drawDate)
                 .winningNumbers(generatedWinningNumbers)
@@ -94,17 +105,21 @@ class NumberGeneratorFacadeTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenFailToRetrieveNumbersByGivenDate() {
+    public void should_throw_exception_when_fail_to_retrieve_numbers_by_given_date() {
+        // given
         LocalDateTime drawDate = LocalDateTime.of(2025, 2, 27, 12, 0, 0);
         RandomNumbersGenerable generator = new WinningNumbersGeneratorTestImpl();
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(drawDate);
         WinningNumbersGeneratorFacade winningNumbersGeneratorFacade = new WinningNumbersGeneratorConfiguration().createForTest(generator, winningNumbersRepository, drawDateRetrieverFacade);
 
+        // when
+        // then
         assertThrows(WinningNumbersNotFoundException.class, () -> winningNumbersGeneratorFacade.retrieveWinningNumberByDate(drawDate), "Not Found");
     }
 
     @Test
-    public void shouldReturnTrueIfNumbersAreGeneratedByGivenDate() {
+    public void should_return_true_if_numbers_are_generated_by_given_date() {
+        // given
         LocalDateTime drawDate = LocalDateTime.of(2025, 2, 27, 12, 0, 0);
         Set<Integer> generatedWinningNumbers = Set.of(1, 2, 3, 4, 5, 6);
         String winningNumbersId = UUID.randomUUID().toString();
@@ -118,8 +133,10 @@ class NumberGeneratorFacadeTest {
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(drawDate);
         WinningNumbersGeneratorFacade numbersGenerator = new WinningNumbersGeneratorConfiguration().createForTest(generator, winningNumbersRepository, drawDateRetrieverFacade);
 
+        // when
         boolean areWinningNumbersGeneratedByDate = numbersGenerator.areWinningNumbersGeneratedByDrawDate();
 
+        // then
         assertTrue(areWinningNumbersGeneratedByDate);
 
     }

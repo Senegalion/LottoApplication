@@ -29,13 +29,16 @@ class NumberReceiverFacadeTest {
     );
 
     @Test
-    public void shouldReturnSuccessResponseWhenUserGaveExactlySixCorrectNumbers() {
+    public void should_return_success_response_when_user_gave_exactly_six_correct_numbers() {
+        // given
         Set<Integer> numbers = Set.of(1, 2, 3, 4, 5, 6);
         LocalDateTime drawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(drawDate);
 
+        // when
         NumberReceiverResponseDto response = numberReceiverFacade.inputNumbers(numbers);
 
+        // then
         TicketDto generatedTicket = TicketDto.builder()
                 .ticketId(response.ticketDto().ticketId())
                 .drawDate(response.ticketDto().drawDate())
@@ -46,54 +49,69 @@ class NumberReceiverFacadeTest {
     }
 
     @Test
-    public void shouldReturnFailedWhenUserGaveLessThanSixNumbers() {
+    public void should_return_failed_when_user_gave_less_than_six_numbers() {
+        // given
         Set<Integer> numbers = Set.of(1, 2, 3, 4, 5);
 
+        // when
         NumberReceiverResponseDto response = numberReceiverFacade.inputNumbers(numbers);
 
+        // then
         NumberReceiverResponseDto expectedResponse = new NumberReceiverResponseDto(null, ValidationResult.NOT_SIX_NUMBERS_GIVEN.info);
         assertThat(response).isEqualTo(expectedResponse);
     }
 
     @Test
-    public void shouldReturnFailedWhenUserGaveMoreThanSixNumbers() {
+    public void should_return_failed_when_user_gave_more_than_six_numbers() {
+        // given
         Set<Integer> numbers = Set.of(1, 2, 3, 4, 5, 6, 7);
 
+        // when
         NumberReceiverResponseDto response = numberReceiverFacade.inputNumbers(numbers);
 
+        // then
         NumberReceiverResponseDto expectedResponse = new NumberReceiverResponseDto(null, ValidationResult.NOT_SIX_NUMBERS_GIVEN.info);
         assertThat(response).isEqualTo(expectedResponse);
     }
 
     @Test
-    public void shouldReturnFailedWhenUserGaveTooBigNumber() {
+    public void should_return_failed_when_user_gave_too_big_number() {
+        // given
         Set<Integer> numbers = Set.of(1, 2, 3, 4, 5, 105);
 
+        // when
         NumberReceiverResponseDto response = numberReceiverFacade.inputNumbers(numbers);
 
+        // then
         NumberReceiverResponseDto expectedResponse = new NumberReceiverResponseDto(null, ValidationResult.NOT_IN_RANGE.info);
         assertThat(response).isEqualTo(expectedResponse);
     }
 
     @Test
-    public void shouldReturnFailedWhenUserGaveTooSmallNumber() {
+    public void should_return_failed_when_user_gave_too_small_number() {
+        // given
         Set<Integer> numbers = Set.of(-1, 2, 3, 4, 5, 6);
 
+        // when
         NumberReceiverResponseDto response = numberReceiverFacade.inputNumbers(numbers);
 
+        // then
         NumberReceiverResponseDto expectedResponse = new NumberReceiverResponseDto(null, ValidationResult.NOT_IN_RANGE.info);
         assertThat(response).isEqualTo(expectedResponse);
     }
 
     @Test
-    public void shouldReturnSaveToDatabaseWhenUserGaveExactlySixNumbers() {
+    public void should_return_save_to_database_when_user_gave_exactly_six_numbers() {
+        // given
         Set<Integer> numbers = Set.of(1, 2, 3, 4, 5, 6);
         LocalDateTime drawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(drawDate);
 
+        // when
         NumberReceiverResponseDto result = numberReceiverFacade.inputNumbers(numbers);
         List<TicketDto> ticketDtos = numberReceiverFacade.getUserNumbers(drawDate);
 
+        // then
         assertThat(ticketDtos).contains(
                 TicketDto.builder()
                         .ticketId(result.ticketDto().ticketId())
@@ -104,7 +122,8 @@ class NumberReceiverFacadeTest {
     }
 
     @Test
-    public void shouldReturnTicketsWithCorrectDrawDate() {
+    public void should_return_tickets_with_correct_draw_date() {
+        // given
         Instant fixedInstant = LocalDateTime.of(2025, 3, 5, 12, 0, 0).toInstant(ZoneOffset.UTC);
         ZoneId of = ZoneId.of("Europe/London");
         AdjustableClock clock = new AdjustableClock(fixedInstant, of);
@@ -125,13 +144,16 @@ class NumberReceiverFacadeTest {
         TicketDto ticketDto2 = numberReceiverResponseDto2.ticketDto();
         LocalDateTime drawDate = numberReceiverResponseDto.ticketDto().drawDate();
 
+        // when
         List<TicketDto> allTicketsByDate = numberReceiverFacade.retrieveAllTicketsByNextDrawDate(drawDate);
 
+        // then
         assertThat(allTicketsByDate).containsOnly(ticketDto, ticketDto1, ticketDto2);
     }
 
     @Test
-    public void shouldReturnTicketsForTheNextDrawDate() {
+    public void should_return_tickets_for_the_next_draw_date() {
+        // given
         Instant fixedInstant = LocalDateTime.of(2025, 2, 26, 11, 50, 0).toInstant(ZoneOffset.UTC);
         ZoneId of = ZoneId.of("Europe/London");
         AdjustableClock clock = new AdjustableClock(fixedInstant, of);
@@ -150,58 +172,74 @@ class NumberReceiverFacadeTest {
         TicketDto ticketDto2 = numberReceiverResponseDto2.ticketDto();
         TicketDto ticketDto3 = numberReceiverResponseDto3.ticketDto();
 
+        // when
         List<TicketDto> allTicketsByDate = numberReceiverFacade.retrieveAllTicketsByNextDrawDate();
 
+        // then
         assertThat(allTicketsByDate).containsOnly(ticketDto, ticketDto1, ticketDto2, ticketDto3);
     }
 
     @Test
-    public void shouldReturnEmptyCollectionsIfThereAreNoTickets() {
+    public void should_return_empty_collections_if_there_are_no_tickets() {
+        // given
         LocalDateTime drawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(drawDate);
         NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, ticketRepository, drawDateRetrieverFacade);
 
+        // when
         List<TicketDto> allTicketsByDate = numberReceiverFacade.retrieveAllTicketsByNextDrawDate(drawDate);
 
+        // then
         assertThat(allTicketsByDate).isEmpty();
     }
 
     @Test
-    public void shouldReturnEmptyCollectionsIfDateIsAfterNextDrawDate() {
+    public void should_return_empty_collections_if_date_is_after_next_draw_date() {
+        // given
         LocalDateTime date = LocalDateTime.of(2025, 3, 9, 12, 0, 0);
         when(drawDateRetrieverFacade.retrieveNextDrawDate()).thenReturn(date);
         NumberReceiverFacade numberReceiverFacade = new NumberReceiverConfiguration().numberReceiverFacade(idGenerator, ticketRepository, drawDateRetrieverFacade);
         NumberReceiverResponseDto numberReceiverResponseDto = numberReceiverFacade.inputNumbers(Set.of(1, 2, 3, 4, 5, 6));
 
+        // when
         LocalDateTime drawDate = numberReceiverResponseDto.ticketDto().drawDate();
-
         List<TicketDto> allTicketsByDate = numberReceiverFacade.retrieveAllTicketsByNextDrawDate(drawDate.plusWeeks(1L));
 
+        // then
         assertThat(allTicketsByDate).isEmpty();
     }
 
     @Test
-    public void shouldReturnParticularTicketByTheTicketId() {
+    public void should_return_particular_ticket_by_the_ticket_id() {
+        // given
         Set<Integer> numbers = Set.of(1, 2, 3, 4, 5, 6);
 
+        // when
         TicketDto expectedTicketDto = numberReceiverFacade.inputNumbers(numbers).ticketDto();
         String ticketId = expectedTicketDto.ticketId();
         TicketDto ticketDto = numberReceiverFacade.findByTicketId(ticketId);
 
+        // then
         assertThat(expectedTicketDto).isEqualTo(ticketDto);
     }
 
     @Test
-    public void shouldThrowExceptionWhenTicketIsNull() {
+    public void should_throw_exception_when_ticket_is_null() {
+        // given
         TicketDto expectedTicketDto = null;
 
+        // when
+        // then
         Assertions.assertThrows(RuntimeException.class, () -> numberReceiverFacade.findByTicketId(expectedTicketDto.ticketId()));
     }
 
     @Test
-    public void shouldThrowExceptionWhenTicketDoesNotExist() {
+    public void should_throw_exception_when_ticket_does_not_exist() {
+        // given
         String ticketId = "Some ticket Id";
 
+        // when
+        // then
         Assertions.assertThrows(RuntimeException.class, () -> numberReceiverFacade.findByTicketId(ticketId));
     }
 }
