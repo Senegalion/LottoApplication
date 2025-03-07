@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -18,8 +19,13 @@ public class TicketRepositoryTestImpl implements TicketRepository {
 
     @Override
     public Ticket save(Ticket ticket) {
-        tickets.put(ticket.ticketId(), ticket);
-        return ticket;
+        Ticket ticketWithId = Ticket.builder()
+                .ticketId(UUID.randomUUID().toString())
+                .drawDate(ticket.drawDate())
+                .numbers(ticket.numbers())
+                .build();
+        tickets.put(ticketWithId.ticketId(), ticketWithId);
+        return ticketWithId;
     }
 
     @Override
