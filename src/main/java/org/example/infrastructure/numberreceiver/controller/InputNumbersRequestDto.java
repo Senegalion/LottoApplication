@@ -1,8 +1,8 @@
 package org.example.infrastructure.numberreceiver.controller;
 
-import java.util.List;
+import java.util.Set;
 
 public record InputNumbersRequestDto(
-        List<Integer> inputNumbers
+        Set<Integer> inputNumbers
 ) {
 }

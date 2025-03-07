@@ -10,9 +10,10 @@ class WinningNumberValidator {
     public static final int MAXIMUM_NUMBER = 99;
     public static final int SIZE = 6;
 
-    List<ValidationResult> errors = new LinkedList<>();
+    List<ValidationResult> errors;
 
     public List<ValidationResult> filterNumbers(Set<Integer> numbers) {
+        errors = new LinkedList<>();
         if (!isNumbersSizeCorrect(numbers)) {
             errors.add(ValidationResult.NOT_SIX_NUMBERS_GIVEN);
         }

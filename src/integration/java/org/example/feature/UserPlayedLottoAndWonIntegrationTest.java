@@ -2,19 +2,23 @@ package org.example.feature;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.example.BaseIntegrationTest;
+import org.example.domain.numberreceiver.dto.NumberReceiverResponseDto;
 import org.example.domain.winningnumbersgenerator.WinningNumbersGeneratorFacade;
 import org.example.domain.winningnumbersgenerator.WinningNumbersNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -60,7 +64,15 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                 )
                 .contentType(MediaType.APPLICATION_JSON)
         );
-        resultActions.andExpect(status().isOk());
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String json = mvcResult.getResponse().getContentAsString();
+        NumberReceiverResponseDto numberReceiverResponseDto = objectMapper.readValue(json, NumberReceiverResponseDto.class);
+
+        assertAll(
+                () -> assertThat(numberReceiverResponseDto.ticketDto().drawDate()).isEqualTo(drawDate),
+                () -> assertThat(numberReceiverResponseDto.ticketDto().ticketId()).isNotNull(),
+                () -> assertThat(numberReceiverResponseDto.message()).isEqualTo("SUCCESS")
+        );
 
         // step 4: 3 days and 1 minute passed, and it is 1 minute after the draw date (8.03.2025 12:01)
         clock.plusDaysAndMinutes(3, 1);

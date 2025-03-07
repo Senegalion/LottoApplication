@@ -21,31 +21,24 @@ public class NumberReceiverFacade {
     private final DrawDateRetrieverFacade drawDateRetrieverFacade;
 
     public NumberReceiverResponseDto inputNumbers(Set<Integer> numbers) {
-        List<ValidationResult> correctNumbers = winningNumberValidator.filterNumbers(numbers);
-        if (!correctNumbers.isEmpty()) {
+        List<ValidationResult> validationResults = winningNumberValidator.filterNumbers(numbers);
+        if (!validationResults.isEmpty()) {
             String resultMessage = winningNumberValidator.createResultMessage();
             return new NumberReceiverResponseDto(null, resultMessage);
         }
 
         LocalDateTime drawDate = retrieveNextDrawDate();
-        String ticketId = idGenerator.getId();
 
-        TicketDto generatedTicket = TicketDto.builder()
-                .ticketId(ticketId)
+        Ticket savedTicket = Ticket.builder()
                 .drawDate(drawDate)
                 .numbers(numbers)
                 .build();
 
-        Ticket savedTicket = Ticket.builder()
-                .ticketId(generatedTicket.ticketId())
-                .drawDate(generatedTicket.drawDate())
-                .numbers(generatedTicket.numbers())
-                .build();
-
-        ticketRepository.save(savedTicket);
+        Ticket ticket = ticketRepository.save(savedTicket);
+        TicketDto ticketDto = TicketMapper.mapFromTicket(ticket);
 
         return NumberReceiverResponseDto.builder()
-                .ticketDto(generatedTicket)
+                .ticketDto(ticketDto)
                 .message(INPUT_SUCCESS.info)
                 .build();
     }
