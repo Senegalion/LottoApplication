@@ -40,8 +40,8 @@ public class ResultCheckerFacade {
 
     public ResultDTO findById(String id) {
         Player player = playerRepository.findByPlayerId(id)
-                .orElseThrow(() -> new PlayerNotFoundException(
-                        "Player with id: [%s] has not been found in the database", id)
+                .orElseThrow(() -> new PlayerNotFoundException(String.format(
+                        "Player with id: [%s] has not been found in the database", id))
                 );
 
         return ResultDTO.builder()
