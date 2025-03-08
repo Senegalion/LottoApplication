@@ -3,6 +3,7 @@ package org.example.feature;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.example.BaseIntegrationTest;
 import org.example.domain.numberreceiver.dto.NumberReceiverResponseDto;
+import org.example.domain.resultannouncer.dto.ResultAnnouncerResponseDto;
 import org.example.domain.winningnumbersgenerator.WinningNumbersGeneratorFacade;
 import org.example.domain.winningnumbersgenerator.WinningNumbersNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,9 @@ import java.util.concurrent.TimeUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
@@ -57,7 +60,7 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
         // step 3: user made POST /inputNumbers with 6 numbers (1, 2, 3, 4, 5, 6) at 5-03-2025 12:00 and system returned OK(200) with message: “success” and Ticket (DrawDate:8.03.2025 12:00 (Saturday), TicketId: sampleTicketId)
         // given
         // when
-        ResultActions resultActions = mockMvc.perform(post("/inputNumbers")
+        ResultActions performPostNumber = mockMvc.perform(post("/inputNumbers")
                 .content("""
                         {
                         "inputNumbers" : [1, 2, 3, 4, 5, 6]
@@ -66,7 +69,7 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                 )
                 .contentType(MediaType.APPLICATION_JSON)
         );
-        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        MvcResult mvcResult = performPostNumber.andExpect(status().isOk()).andReturn();
         String json = mvcResult.getResponse().getContentAsString();
         NumberReceiverResponseDto numberReceiverResponseDto = objectMapper.readValue(json, NumberReceiverResponseDto.class);
 
@@ -80,9 +83,27 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
         // step 4: 3 days and 1 minute passed, and it is 1 minute after the draw date (8.03.2025 12:01)
         clock.plusDaysAndMinutes(3, 1);
 
-        // step 5: system generated result for TicketId: sampleTicketId with draw date 8.03.2025 12:00, and saved it with 6 hits
-        // step 6: 3 hours passed, and it is 1 minute after announcement time (8.03.2025 15:01)
-        // step 7: user made GET /results/sampleTicketId and system returned 200 (OK)
+        // step 5: user made GET /results/nonExistingId and system returned 404(NOT_FOUND) and body with (message: Not found for id: nonExistingId and status NOT_FOUND)
+        // given
+        // when
+        String nonExistingId = "nonExistingId";
+        ResultActions performGetResultsWithNotExistingId = mockMvc.perform(get("/results/" + nonExistingId));
+
+        //then
+        performGetResultsWithNotExistingId.andExpect(status().isNotFound())
+                .andExpect(content().json("""
+                        {
+                        "message" : "Not found for id: nonExistingId",
+                        "status": "NOT_FOUND"
+                        }
+                        """.trim()
+                ));
+//        String jsonWithNonExistingId = mvcResultWithNonExistingId.getResponse().getContentAsString();
+//        ResultAnnouncerResponseDto resultAnnouncerResponseDto = objectMapper.readValue(jsonWithNonExistingId, ResultAnnouncerResponseDto.class);
+
+        // step 6: system generated result for TicketId: sampleTicketId with draw date 8.03.2025 12:00, and saved it with 6 hits
+        // step 7: 3 hours passed, and it is 1 minute after announcement time (8.03.2025 15:01)
+        // step 8: user made GET /results/sampleTicketId and system returned 200 (OK)
 
     }
 }
