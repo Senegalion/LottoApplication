@@ -3,7 +3,6 @@ package org.example.feature;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.example.BaseIntegrationTest;
 import org.example.domain.numberreceiver.dto.NumberReceiverResponseDto;
-import org.example.domain.resultannouncer.dto.ResultAnnouncerResponseDto;
 import org.example.domain.winningnumbersgenerator.WinningNumbersGeneratorFacade;
 import org.example.domain.winningnumbersgenerator.WinningNumbersNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -93,7 +92,7 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
         performGetResultsWithNotExistingId.andExpect(status().isNotFound())
                 .andExpect(content().json("""
                         {
-                        "message" : "Not found for id: nonExistingId",
+                        "message" : "Player with id: [nonExistingId] has not been found in the database",
                         "status": "NOT_FOUND"
                         }
                         """.trim()
