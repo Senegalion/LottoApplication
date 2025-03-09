@@ -14,7 +14,7 @@ public class ResultAnnouncerControllerErrorHandler {
     @ExceptionHandler(PlayerNotFoundException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResultAnnouncerErrorResponse f(PlayerNotFoundException playerNotFoundException) {
+    public ResultAnnouncerErrorResponse resultAnnouncerErrorResponse(PlayerNotFoundException playerNotFoundException) {
         String errorMessage = playerNotFoundException.getMessage();
         log.error(errorMessage);
         return ResultAnnouncerErrorResponse.builder()
