@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @Slf4j
 public class InputNumbersRestController {
@@ -16,7 +18,7 @@ public class InputNumbersRestController {
     NumberReceiverFacade numberReceiverFacade;
 
     @PostMapping("/inputNumbers")
-    public ResponseEntity<NumberReceiverResponseDto> inputNumbers(@RequestBody InputNumbersRequestDto requestDto) {
+    public ResponseEntity<NumberReceiverResponseDto> inputNumbers(@RequestBody @Valid InputNumbersRequestDto requestDto) {
         NumberReceiverResponseDto numberReceiverResponseDto =
                 numberReceiverFacade.inputNumbers(requestDto.inputNumbers());
 
