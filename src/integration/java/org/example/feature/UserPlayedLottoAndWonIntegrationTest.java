@@ -4,9 +4,10 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import lombok.extern.slf4j.Slf4j;
 import org.example.BaseIntegrationTest;
 import org.example.domain.numberreceiver.dto.NumberReceiverResponseDto;
+import org.example.domain.resultchecker.PlayerNotFoundException;
+import org.example.domain.resultchecker.ResultCheckerFacade;
 import org.example.domain.winningnumbersgenerator.WinningNumbersGeneratorFacade;
 import org.example.domain.winningnumbersgenerator.WinningNumbersNotFoundException;
-import org.example.domain.winningnumbersgenerator.dto.WinningNumbersDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,8 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     WinningNumbersGeneratorFacade winningNumbersGeneratorFacade;
+    @Autowired
+    ResultCheckerFacade resultCheckerFacade;
 
     @Test
     public void should_user_win_and_system_should_generate_winners() throws Exception {
@@ -79,11 +82,12 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
         MvcResult mvcResult = performPostNumber.andExpect(status().isOk()).andReturn();
         String json = mvcResult.getResponse().getContentAsString();
         NumberReceiverResponseDto numberReceiverResponseDto = objectMapper.readValue(json, NumberReceiverResponseDto.class);
+        String ticketId = numberReceiverResponseDto.ticketDto().ticketId();
 
         // then
         assertAll(
                 () -> assertThat(numberReceiverResponseDto.ticketDto().drawDate()).isEqualTo(drawDate),
-                () -> assertThat(numberReceiverResponseDto.ticketDto().ticketId()).isNotNull(),
+                () -> assertThat(ticketId).isNotNull(),
                 () -> assertThat(numberReceiverResponseDto.message()).isEqualTo("SUCCESS")
         );
 
@@ -111,18 +115,16 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
         // step 6: system generated result for TicketId: sampleTicketId with draw date 8.03.2025 12:00, and saved it with 6 hits
         // given
         // when
-        ResultActions performGettingWinningNumbers = mockMvc.perform(get(WINNING_NUMBERS_ENDPOINT)
-                .contentType(MediaType.APPLICATION_JSON));
-        MvcResult mvcResultGettingWinningNumbers = performGettingWinningNumbers.andExpect(status().isOk()).andReturn();
-        String jsonGettingWinningNumbers = mvcResultGettingWinningNumbers.getResponse().getContentAsString();
-        WinningNumbersDto winningNumbersDto = objectMapper.readValue(jsonGettingWinningNumbers, WinningNumbersDto.class);
-
-        //then
-        assertAll(
-                () -> assertThat(winningNumbersDto.drawDate()).isEqualTo(drawDate),
-                () -> assertThat(winningNumbersDto.winningNumbers()).hasSize(NUMBER_OF_WINNING_NUMBERS),
-                () -> assertThat(winningNumbersDto.winningNumbers()).containsExactlyInAnyOrder(1, 2, 3, 4, 5, 6)
-        );
+        await()
+                .atMost(20, TimeUnit.SECONDS)
+                .pollInterval(Duration.ofSeconds(1))
+                .until(() -> {
+                    try {
+                        return !resultCheckerFacade.findById(ticketId).resultId().isEmpty();
+                    } catch (PlayerNotFoundException exception) {
+                        return false;
+                    }
+                });
 
         // step 7: 6 minutes passed, and it is 1 minute after announcement time (8.03.2025 12:01)
         // step 8: user made GET /results/sampleTicketId and system returned 200 (OK)
