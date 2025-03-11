@@ -1,6 +1,7 @@
 package org.example.feature;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import lombok.extern.slf4j.Slf4j;
 import org.example.BaseIntegrationTest;
 import org.example.domain.numberreceiver.dto.NumberReceiverResponseDto;
 import org.example.domain.winningnumbersgenerator.WinningNumbersGeneratorFacade;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
@@ -40,7 +42,7 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                                 [1, 2, 3, 4, 5, 6, 82, 82, 83, 83, 86, 57, 10, 81, 53, 93, 50, 54, 31, 88, 15, 43, 79, 32, 43]
                                           """.trim()
                         )));
-        // step 2: system fetched winning numbers for draw date: 8.03.2025 12:00
+        // step 2: system fetched winning numbers for draw date: 8.03.2025 10:00
         LocalDateTime drawDate = LocalDateTime.of(2025, 3, 8, 12, 0, 0);
         await()
                 .atMost(20, TimeUnit.SECONDS)
@@ -79,9 +81,6 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                 () -> assertThat(numberReceiverResponseDto.message()).isEqualTo("SUCCESS")
         );
 
-        // step 4: 3 days and 1 minute passed, and it is 1 minute after the draw date (8.03.2025 12:01)
-        clock.plusDaysAndMinutes(3, 1);
-
         // step 5: user made GET /results/nonExistingId and system returned 404(NOT_FOUND) and body with (message: Not found for id: nonExistingId and status NOT_FOUND)
         // given
         // when
@@ -97,11 +96,14 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                         }
                         """.trim()
                 ));
-//        String jsonWithNonExistingId = mvcResultWithNonExistingId.getResponse().getContentAsString();
-//        ResultAnnouncerResponseDto resultAnnouncerResponseDto = objectMapper.readValue(jsonWithNonExistingId, ResultAnnouncerResponseDto.class);
+
+        // step 4: 3 days and 55 minute passed, and it is 5 minute before the draw date (8.03.2025 11:55)
+        log.info(clock.toString());
+        clock.plusDaysAndMinutes(3, 55);
+        log.info(clock.toString());
 
         // step 6: system generated result for TicketId: sampleTicketId with draw date 8.03.2025 12:00, and saved it with 6 hits
-        // step 7: 3 hours passed, and it is 1 minute after announcement time (8.03.2025 15:01)
+        // step 7: 6 minutes passed, and it is 1 minute after announcement time (8.03.2025 12:01)
         // step 8: user made GET /results/sampleTicketId and system returned 200 (OK)
 
     }
