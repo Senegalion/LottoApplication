@@ -19,7 +19,7 @@ public class IntegrationConfiguration {
     @Primary
     AdjustableClock clock() {
         LocalDate date = LocalDate.of(2025, 3, 5);
-        LocalTime time = LocalTime.of(12, 0, 0);
+        LocalTime time = LocalTime.of(11, 0, 0);
         ZoneId zone = ZoneId.of("Europe/Warsaw");
         log.info(AdjustableClock.ofLocalDateAndLocalTime(date, time, zone).toString());
         return AdjustableClock.ofLocalDateAndLocalTime(date, time, zone);

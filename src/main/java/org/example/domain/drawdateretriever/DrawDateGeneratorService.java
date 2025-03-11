@@ -21,7 +21,7 @@ public class DrawDateGeneratorService implements DrawDateGenerable {
 
     @Override
     public LocalDateTime getNextDrawDate() {
-        LocalDateTime currentDateTime = LocalDateTime.now(clock).minusHours(1);
+        LocalDateTime currentDateTime = LocalDateTime.now(clock);
         if (isSaturdayAndBeforeNoon(currentDateTime)) {
             return LocalDateTime.of(currentDateTime.toLocalDate(), DRAW_TIME);
         }

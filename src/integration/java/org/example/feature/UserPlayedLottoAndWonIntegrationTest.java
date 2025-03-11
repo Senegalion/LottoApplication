@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import lombok.extern.slf4j.Slf4j;
 import org.example.BaseIntegrationTest;
 import org.example.domain.numberreceiver.dto.NumberReceiverResponseDto;
+import org.example.domain.resultannouncer.dto.ResultAnnouncerResponseDto;
 import org.example.domain.resultchecker.PlayerNotFoundException;
 import org.example.domain.resultchecker.ResultCheckerFacade;
 import org.example.domain.winningnumbersgenerator.WinningNumbersGeneratorFacade;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,11 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
-
-    public static final String WINNING_NUMBERS_ENDPOINT = "/winningNumbers";
     public static final String RESULTS_ENDPOINT = "/results/";
     public static final String INPUT_NUMBERS_ENDPOINT = "/inputNumbers";
-    public static final int NUMBER_OF_WINNING_NUMBERS = 6;
 
     @Autowired
     WinningNumbersGeneratorFacade winningNumbersGeneratorFacade;
@@ -41,7 +40,7 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
     ResultCheckerFacade resultCheckerFacade;
 
     @Test
-    public void should_user_win_and_system_should_generate_winners() throws Exception {
+    public void  should_user_win_and_system_should_generate_winners() throws Exception {
         // step 1: external service returns 6 random numbers (1,2,3,4,5,6)
         wireMockServer.stubFor(WireMock.get("/api/v1.0/random?min=1&max=99&count=25")
                 .willReturn(WireMock.aResponse()
@@ -107,9 +106,9 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                         """.trim()
                 ));
 
-        // step 5: 3 days and 55 minute passed, and it is 5 minute before the draw date (8.03.2025 11:55)
+        // step 5: 3 days and 55 minute passed, and it is 5 minute before the draw date (8.03.2025 10:55)
         log.info(clock.toString());
-        clock.plusDaysAndMinutes(3, 55);
+        clock.plusDaysAndHourAndMinutes(3, 0, 55);
         log.info(clock.toString());
 
         // step 6: system generated result for TicketId: sampleTicketId with draw date 8.03.2025 12:00, and saved it with 6 hits
@@ -126,8 +125,26 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                     }
                 });
 
-        // step 7: 6 minutes passed, and it is 1 minute after announcement time (8.03.2025 12:01)
-        // step 8: user made GET /results/sampleTicketId and system returned 200 (OK)
+        // step 7: 1 hour and 6 minutes passed, and it is 1 minute after announcement time (8.03.2025 12:01)
+        clock.plusDaysAndHourAndMinutes(0, 1, 6);
+        log.info(clock.toString());
 
+        // step 8: user made GET /results/sampleTicketId and system returned 200 (OK)
+        // given
+        // when
+        ResultActions performGetResultsForUniqueId = mockMvc.perform(get(RESULTS_ENDPOINT + ticketId));
+        MvcResult mvcResultForUniqueId = performGetResultsForUniqueId.andExpect(status().isOk()).andReturn();
+        String jsonForUniqueId = mvcResultForUniqueId.getResponse().getContentAsString();
+        ResultAnnouncerResponseDto resultAnnouncerResponseDto = objectMapper.readValue(jsonForUniqueId, ResultAnnouncerResponseDto.class);
+
+        // then
+        assertAll(
+                () -> assertThat(resultAnnouncerResponseDto.responseDto().id()).isEqualTo(ticketId),
+                () -> assertThat(resultAnnouncerResponseDto.responseDto().numbers()).isEqualTo(Set.of(1, 2, 3, 4, 5, 6)),
+                () -> assertThat(resultAnnouncerResponseDto.responseDto().guessedNumbers()).isEqualTo(Set.of(1, 2, 3, 4, 5, 6)),
+                () -> assertThat(resultAnnouncerResponseDto.responseDto().drawDate()).isEqualTo(drawDate),
+                () -> assertThat(resultAnnouncerResponseDto.responseDto().isWinner()).isEqualTo(true),
+                () -> assertThat(resultAnnouncerResponseDto.message()).isEqualTo("Congratulations, you won!")
+        );
     }
 }
