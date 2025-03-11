@@ -120,8 +120,8 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
         //then
         assertAll(
                 () -> assertThat(winningNumbersDto.drawDate()).isEqualTo(drawDate),
-                () -> assertThat(winningNumbersDto.winningNumbers()).isEmpty(),
-                () -> assertThat(winningNumbersDto.winningNumbers()).hasSize(NUMBER_OF_WINNING_NUMBERS)
+                () -> assertThat(winningNumbersDto.winningNumbers()).hasSize(NUMBER_OF_WINNING_NUMBERS),
+                () -> assertThat(winningNumbersDto.winningNumbers()).containsExactlyInAnyOrder(1, 2, 3, 4, 5, 6)
         );
 
         // step 7: 6 minutes passed, and it is 1 minute after announcement time (8.03.2025 12:01)
