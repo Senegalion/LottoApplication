@@ -6,6 +6,7 @@ import org.example.BaseIntegrationTest;
 import org.example.domain.numberreceiver.dto.NumberReceiverResponseDto;
 import org.example.domain.winningnumbersgenerator.WinningNumbersGeneratorFacade;
 import org.example.domain.winningnumbersgenerator.WinningNumbersNotFoundException;
+import org.example.domain.winningnumbersgenerator.dto.WinningNumbersDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
+
+    public static final String WINNING_NUMBERS_ENDPOINT = "/winningNumbers";
+    public static final String RESULTS_ENDPOINT = "/results/";
+    public static final String INPUT_NUMBERS_ENDPOINT = "/inputNumbers";
+    public static final int NUMBER_OF_WINNING_NUMBERS = 6;
 
     @Autowired
     WinningNumbersGeneratorFacade winningNumbersGeneratorFacade;
@@ -61,7 +67,7 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
         // step 3: user made POST /inputNumbers with 6 numbers (1, 2, 3, 4, 5, 6) at 5-03-2025 12:00 and system returned OK(200) with message: “success” and Ticket (DrawDate:8.03.2025 12:00 (Saturday), TicketId: sampleTicketId)
         // given
         // when
-        ResultActions performPostNumber = mockMvc.perform(post("/inputNumbers")
+        ResultActions performPostNumber = mockMvc.perform(post(INPUT_NUMBERS_ENDPOINT)
                 .content("""
                         {
                         "inputNumbers" : [1, 2, 3, 4, 5, 6]
@@ -81,11 +87,11 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                 () -> assertThat(numberReceiverResponseDto.message()).isEqualTo("SUCCESS")
         );
 
-        // step 5: user made GET /results/nonExistingId and system returned 404(NOT_FOUND) and body with (message: Not found for id: nonExistingId and status NOT_FOUND)
+        // step 4: user made GET /results/nonExistingId and system returned 404(NOT_FOUND) and body with (message: Not found for id: nonExistingId and status NOT_FOUND)
         // given
         // when
         String nonExistingId = "nonExistingId";
-        ResultActions performGetResultsWithNotExistingId = mockMvc.perform(get("/results/" + nonExistingId));
+        ResultActions performGetResultsWithNotExistingId = mockMvc.perform(get(RESULTS_ENDPOINT + nonExistingId));
 
         //then
         performGetResultsWithNotExistingId.andExpect(status().isNotFound())
@@ -97,12 +103,27 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
                         """.trim()
                 ));
 
-        // step 4: 3 days and 55 minute passed, and it is 5 minute before the draw date (8.03.2025 11:55)
+        // step 5: 3 days and 55 minute passed, and it is 5 minute before the draw date (8.03.2025 11:55)
         log.info(clock.toString());
         clock.plusDaysAndMinutes(3, 55);
         log.info(clock.toString());
 
         // step 6: system generated result for TicketId: sampleTicketId with draw date 8.03.2025 12:00, and saved it with 6 hits
+        // given
+        // when
+        ResultActions performGettingWinningNumbers = mockMvc.perform(get(WINNING_NUMBERS_ENDPOINT)
+                .contentType(MediaType.APPLICATION_JSON));
+        MvcResult mvcResultGettingWinningNumbers = performGettingWinningNumbers.andExpect(status().isOk()).andReturn();
+        String jsonGettingWinningNumbers = mvcResultGettingWinningNumbers.getResponse().getContentAsString();
+        WinningNumbersDto winningNumbersDto = objectMapper.readValue(jsonGettingWinningNumbers, WinningNumbersDto.class);
+
+        //then
+        assertAll(
+                () -> assertThat(winningNumbersDto.drawDate()).isEqualTo(drawDate),
+                () -> assertThat(winningNumbersDto.winningNumbers()).isEmpty(),
+                () -> assertThat(winningNumbersDto.winningNumbers()).hasSize(NUMBER_OF_WINNING_NUMBERS)
+        );
+
         // step 7: 6 minutes passed, and it is 1 minute after announcement time (8.03.2025 12:01)
         // step 8: user made GET /results/sampleTicketId and system returned 200 (OK)
 
