@@ -12,7 +12,7 @@ import java.time.Duration;
 @Configuration
 @AllArgsConstructor
 public class RandomNumbersGeneratorClientConfig {
-    private final RandomNumberGeneratorRestTemplateConfigurationProperties properties;
+    private final RandomNumbersGeneratorRestTemplateConfigurationProperties properties;
 
     @Bean
     public RestTemplateResponseErrorHandler restTemplateResponseErrorHandler() {
