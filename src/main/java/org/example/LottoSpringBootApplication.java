@@ -1,7 +1,7 @@
 package org.example;
 
 import org.example.domain.winningnumbersgenerator.WinningNumbersGeneratorFacadeConfigurationProperties;
-import org.example.infrastructure.winningnumbersgenerator.http.RandomNumberGeneratorRestTemplateConfigurationProperties;
+import org.example.infrastructure.winningnumbersgenerator.http.RandomNumbersGeneratorRestTemplateConfigurationProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableConfigurationProperties({
         WinningNumbersGeneratorFacadeConfigurationProperties.class,
-        RandomNumberGeneratorRestTemplateConfigurationProperties.class
+        RandomNumbersGeneratorRestTemplateConfigurationProperties.class
 })
 @EnableScheduling
 @EnableMongoRepositories
