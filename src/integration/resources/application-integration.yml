@@ -3,3 +3,8 @@ lotto:
     lotteryRunOccurrence: "*/5 * * * * *"
   result-checker:
     lotteryRunOccurrence: "*/7 * * * * *"
+spring:
+  cache:
+    type: none
+    redis:
+      time-to-live: PT10S
