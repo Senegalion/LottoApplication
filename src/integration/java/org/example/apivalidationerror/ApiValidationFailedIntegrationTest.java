@@ -4,6 +4,7 @@ import org.example.BaseIntegrationTest;
 import org.example.infrastructure.apivalidation.ApiValidationErrorDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -18,6 +19,7 @@ public class ApiValidationFailedIntegrationTest extends BaseIntegrationTest {
     public static final String INPUT_NUMBERS_MUST_NOT_BE_EMPTY = "INPUT NUMBERS MUST NOT BE EMPTY";
 
     @Test
+    @WithMockUser
     public void should_return_400_bad_request_and_validation_message_when_request_has_empty_input_numbers() throws Exception {
         // given
         // when
@@ -41,6 +43,7 @@ public class ApiValidationFailedIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     public void should_return_400_bad_request_and_validation_message_when_request_does_not_have_input_numbers() throws Exception {
         // given
         // when
