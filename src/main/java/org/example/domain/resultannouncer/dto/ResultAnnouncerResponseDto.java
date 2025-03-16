@@ -1,4 +1,9 @@
 package org.example.domain.resultannouncer.dto;
 
-public record ResultAnnouncerResponseDto(ResponseDto responseDto, String message) {
+import java.io.Serializable;
+
+public record ResultAnnouncerResponseDto(
+        ResponseDto responseDto,
+        String message
+) implements Serializable {
 }

@@ -5,6 +5,7 @@ import org.example.domain.resultannouncer.dto.ResponseDto;
 import org.example.domain.resultannouncer.dto.ResultAnnouncerResponseDto;
 import org.example.domain.resultchecker.ResultCheckerFacade;
 import org.example.domain.resultchecker.dto.ResultDTO;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class ResultAnnouncerFacade {
     private final ResponseRepository responseRepository;
     private final Clock clock;
 
+    @Cacheable(cacheNames = "lottoResults")
     public ResultAnnouncerResponseDto checkResult(String id) {
         if (responseRepository.existsById(id)) {
             Optional<ResultResponse> resultResponseCached = responseRepository.findById(id);

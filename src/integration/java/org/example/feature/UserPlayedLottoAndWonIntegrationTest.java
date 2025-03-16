@@ -189,6 +189,7 @@ public class UserPlayedLottoAndWonIntegrationTest extends BaseIntegrationTest {
         String json = mvcResult.getResponse().getContentAsString();
         NumberReceiverResponseDto numberReceiverResponseDto = objectMapper.readValue(json, NumberReceiverResponseDto.class);
         String ticketId = numberReceiverResponseDto.ticketDto().ticketId();
+        System.out.println(ticketId);
 
         // then
         assertAll(
