@@ -3,6 +3,7 @@ package org.example.infrastructure.loginandregister.controller;
 import lombok.AllArgsConstructor;
 import org.example.infrastructure.loginandregister.controller.dto.JwtResponseDto;
 import org.example.infrastructure.loginandregister.controller.dto.TokenRequestDto;
+import org.example.infrastructure.security.jwt.JwtAuthenticatorFacade;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
