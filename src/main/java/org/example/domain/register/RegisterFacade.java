@@ -1,13 +1,13 @@
-package org.example.domain.loginandregister;
+package org.example.domain.register;
 
 import lombok.AllArgsConstructor;
-import org.example.domain.loginandregister.dto.RegisterUserDto;
-import org.example.domain.loginandregister.dto.RegistrationResultDto;
-import org.example.domain.loginandregister.dto.UserDto;
+import org.example.domain.register.dto.RegisterUserDto;
+import org.example.domain.register.dto.RegistrationResultDto;
+import org.example.domain.register.dto.UserDto;
 import org.springframework.security.authentication.BadCredentialsException;
 
 @AllArgsConstructor
-public class LoginAndRegisterFacade {
+public class RegisterFacade {
     private final UserRepository userRepository;
 
     public RegistrationResultDto register(RegisterUserDto registerUserDto) {

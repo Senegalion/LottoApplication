@@ -1,4 +1,4 @@
-package org.example.domain.loginandregister;
+package org.example.domain.register;
 
 public class TestCredentials {
     public static String getUsername() {

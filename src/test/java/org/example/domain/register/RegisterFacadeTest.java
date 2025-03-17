@@ -1,8 +1,8 @@
-package org.example.domain.loginandregister;
+package org.example.domain.register;
 
-import org.example.domain.loginandregister.dto.RegisterUserDto;
-import org.example.domain.loginandregister.dto.RegistrationResultDto;
-import org.example.domain.loginandregister.dto.UserDto;
+import org.example.domain.register.dto.RegisterUserDto;
+import org.example.domain.register.dto.RegistrationResultDto;
+import org.example.domain.register.dto.UserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 
@@ -10,18 +10,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class LoginAndRegisterFacadeTest {
+class RegisterFacadeTest {
     private final UserRepository userRepository = new UserRepositoryTestImpl();
 
     @Test
     public void shouldRegisterUser() {
-        LoginAndRegisterFacade loginAndRegisterFacade = new LoginAndRegisterConfiguration()
+        RegisterFacade registerFacade = new RegisterConfiguration()
                 .createForTest(userRepository);
         String testUsername = TestCredentials.getUsername();
         String testPassword = TestCredentials.getPassword();
         RegisterUserDto registerUserDto = new RegisterUserDto(testUsername, testPassword);
 
-        RegistrationResultDto register = loginAndRegisterFacade.register(registerUserDto);
+        RegistrationResultDto register = registerFacade.register(registerUserDto);
 
         assertAll(
                 () -> assertThat(register.wasCreated()).isTrue(),
@@ -31,46 +31,46 @@ class LoginAndRegisterFacadeTest {
 
     @Test
     public void shouldThrowExceptionWhenUserEntersUsernameThatWasNull() {
-        LoginAndRegisterFacade loginAndRegisterFacade = new LoginAndRegisterConfiguration()
+        RegisterFacade registerFacade = new RegisterConfiguration()
                 .createForTest(userRepository);
         String testUsername = null;
         String testPassword = TestCredentials.getPassword();
         RegisterUserDto registerUserDto = new RegisterUserDto(testUsername, testPassword);
 
-        assertThrows(InvalidUserCredentialsException.class, () -> loginAndRegisterFacade.register(registerUserDto));
+        assertThrows(InvalidUserCredentialsException.class, () -> registerFacade.register(registerUserDto));
     }
 
     @Test
     public void shouldThrowExceptionWhenUserEntersPasswordThatWasNull() {
-        LoginAndRegisterFacade loginAndRegisterFacade = new LoginAndRegisterConfiguration()
+        RegisterFacade registerFacade = new RegisterConfiguration()
                 .createForTest(userRepository);
         String testUsername = TestCredentials.getUsername();
         String testPassword = null;
         RegisterUserDto registerUserDto = new RegisterUserDto(testUsername, testPassword);
 
-        assertThrows(InvalidUserCredentialsException.class, () -> loginAndRegisterFacade.register(registerUserDto));
+        assertThrows(InvalidUserCredentialsException.class, () -> registerFacade.register(registerUserDto));
     }
 
     @Test
     public void shouldFindUserByUsername() {
-        LoginAndRegisterFacade loginAndRegisterFacade = new LoginAndRegisterConfiguration()
+        RegisterFacade registerFacade = new RegisterConfiguration()
                 .createForTest(userRepository);
         String testUsername = TestCredentials.getUsername();
         String testPassword = TestCredentials.getPassword();
         RegisterUserDto registerUserDto = new RegisterUserDto(testUsername, testPassword);
-        RegistrationResultDto registrationResultDto = loginAndRegisterFacade.register(registerUserDto);
+        RegistrationResultDto registrationResultDto = registerFacade.register(registerUserDto);
 
-        UserDto foundUser = loginAndRegisterFacade.findByUsername(testUsername);
+        UserDto foundUser = registerFacade.findByUsername(testUsername);
 
         assertThat(foundUser).isEqualTo(new UserDto(registrationResultDto.userId(), testUsername, testPassword));
     }
 
     @Test
     public void shouldThrowExceptionWhenUserHasNotBeenFound() {
-        LoginAndRegisterFacade loginAndRegisterFacade = new LoginAndRegisterConfiguration()
+        RegisterFacade registerFacade = new RegisterConfiguration()
                 .createForTest(userRepository);
         String testUsername = TestCredentials.getUsername();
 
-        assertThrows(BadCredentialsException.class, () -> loginAndRegisterFacade.findByUsername(testUsername));
+        assertThrows(BadCredentialsException.class, () -> registerFacade.findByUsername(testUsername));
     }
 }

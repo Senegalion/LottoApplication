@@ -1,4 +1,4 @@
-package org.example.domain.loginandregister;
+package org.example.domain.register;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;

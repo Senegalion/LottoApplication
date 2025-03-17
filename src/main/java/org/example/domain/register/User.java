@@ -1,4 +1,4 @@
-package org.example.domain.loginandregister;
+package org.example.domain.register;
 
 import lombok.Builder;
 import org.springframework.data.annotation.Id;

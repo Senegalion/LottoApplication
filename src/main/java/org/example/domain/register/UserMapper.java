@@ -1,7 +1,7 @@
-package org.example.domain.loginandregister;
+package org.example.domain.register;
 
 
-import org.example.domain.loginandregister.dto.RegisterUserDto;
+import org.example.domain.register.dto.RegisterUserDto;
 
 class UserMapper {
     public static User mapFromUserDto(RegisterUserDto registerUserDto) {

@@ -18,17 +18,6 @@ public class TicketRepositoryTestImpl implements TicketRepository {
     Map<String, Ticket> tickets = new ConcurrentHashMap<>();
 
     @Override
-    public Ticket save(Ticket ticket) {
-        Ticket ticketWithId = Ticket.builder()
-                .ticketId(UUID.randomUUID().toString())
-                .drawDate(ticket.drawDate())
-                .numbers(ticket.numbers())
-                .build();
-        tickets.put(ticketWithId.ticketId(), ticketWithId);
-        return ticketWithId;
-    }
-
-    @Override
     public List<Ticket> findAllTicketsByDrawDate(LocalDateTime drawDate) {
         return tickets.values().stream()
                 .filter(ticket -> ticket.drawDate().isEqual(drawDate))
@@ -38,6 +27,17 @@ public class TicketRepositoryTestImpl implements TicketRepository {
     @Override
     public Ticket findByTicketId(String ticketId) {
         return tickets.get(ticketId);
+    }
+
+    @Override
+    public <S extends Ticket> S save(S entity) {
+        Ticket ticketWithId = Ticket.builder()
+                .ticketId(UUID.randomUUID().toString())
+                .drawDate(entity.drawDate())
+                .numbers(entity.numbers())
+                .build();
+        tickets.put(ticketWithId.ticketId(), ticketWithId);
+        return (S) ticketWithId;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package org.example.infrastructure.security.jwt;
 
 import lombok.AllArgsConstructor;
-import org.example.domain.loginandregister.LoginAndRegisterFacade;
+import org.example.domain.register.RegisterFacade;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,8 +32,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(LoginAndRegisterFacade loginAndRegisterFacade) {
-        return new LoginUserDetailsService(loginAndRegisterFacade);
+    public UserDetailsService userDetailsService(RegisterFacade registerFacade) {
+        return new LoginUserDetailsService(registerFacade);
     }
 
     @Bean

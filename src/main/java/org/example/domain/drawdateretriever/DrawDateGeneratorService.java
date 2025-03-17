@@ -30,6 +30,7 @@ public class DrawDateGeneratorService implements DrawDateGenerable {
     }
 
     private boolean isSaturdayAndBeforeNoon(LocalDateTime currentDateTime) {
-        return currentDateTime.getDayOfWeek().equals(DayOfWeek.SATURDAY) && currentDateTime.toLocalTime().isBefore(DRAW_TIME);
+        return currentDateTime.getDayOfWeek().equals(DayOfWeek.SATURDAY)
+                && currentDateTime.toLocalTime().isBefore(DRAW_TIME);
     }
 }

@@ -1,4 +1,4 @@
-package org.example.domain.loginandregister;
+package org.example.domain.register;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

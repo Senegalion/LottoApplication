@@ -1,4 +1,4 @@
-package org.example.domain.loginandregister.dto;
+package org.example.domain.register.dto;
 
 import lombok.Builder;
 

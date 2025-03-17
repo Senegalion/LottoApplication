@@ -1,8 +1,8 @@
 package org.example.infrastructure.security.jwt;
 
 import lombok.AllArgsConstructor;
-import org.example.domain.loginandregister.LoginAndRegisterFacade;
-import org.example.domain.loginandregister.dto.UserDto;
+import org.example.domain.register.RegisterFacade;
+import org.example.domain.register.dto.UserDto;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,11 +12,11 @@ import java.util.Collections;
 
 @AllArgsConstructor
 public class LoginUserDetailsService implements UserDetailsService {
-    private final LoginAndRegisterFacade loginAndRegisterFacade;
+    private final RegisterFacade registerFacade;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws BadCredentialsException {
-        UserDto userFound = loginAndRegisterFacade.findByUsername(username);
+        UserDto userFound = registerFacade.findByUsername(username);
         return getUser(userFound);
     }
 

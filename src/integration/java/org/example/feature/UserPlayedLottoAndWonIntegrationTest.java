@@ -3,7 +3,7 @@ package org.example.feature;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import lombok.extern.slf4j.Slf4j;
 import org.example.BaseIntegrationTest;
-import org.example.domain.loginandregister.dto.RegistrationResultDto;
+import org.example.domain.register.dto.RegistrationResultDto;
 import org.example.domain.numberreceiver.dto.NumberReceiverResponseDto;
 import org.example.domain.resultannouncer.dto.ResultAnnouncerResponseDto;
 import org.example.domain.resultchecker.PlayerNotFoundException;

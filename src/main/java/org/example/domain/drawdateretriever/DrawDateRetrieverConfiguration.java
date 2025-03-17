@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import java.time.Clock;
 
 @Configuration
-public class DrawDateRetrieverConfiguration {
+class DrawDateRetrieverConfiguration {
     @Bean
     Clock clock() {
         return Clock.systemUTC();

@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.example.domain.numberreceiver.ValidationResult.INPUT_SUCCESS;
+import static org.example.domain.numberreceiver.ValidationResult.TICKET_DOES_NOT_EXIST;
 
 @AllArgsConstructor
 public class NumberReceiverFacade {
@@ -20,26 +21,35 @@ public class NumberReceiverFacade {
     private final DrawDateRetrieverFacade drawDateRetrieverFacade;
 
     public NumberReceiverResponseDto inputNumbers(Set<Integer> numbers) {
-        List<ValidationResult> validationResults = winningNumberValidator.filterNumbers(numbers);
-        if (!validationResults.isEmpty()) {
-            String resultMessage = winningNumberValidator.createResultMessage();
-            return new NumberReceiverResponseDto(null, resultMessage);
-        }
+        NumberReceiverResponseDto resultMessage = validateNumbers(numbers);
+        if (resultMessage != null) return resultMessage;
 
-        LocalDateTime drawDate = retrieveNextDrawDate();
-
-        Ticket savedTicket = Ticket.builder()
-                .drawDate(drawDate)
-                .numbers(numbers)
-                .build();
-
-        Ticket ticket = ticketRepository.save(savedTicket);
+        Ticket ticket = saveTicketForNumbers(numbers);
         TicketDto ticketDto = TicketMapper.mapFromTicket(ticket);
 
         return NumberReceiverResponseDto.builder()
                 .ticketDto(ticketDto)
                 .message(INPUT_SUCCESS.info)
                 .build();
+    }
+
+    private Ticket saveTicketForNumbers(Set<Integer> numbers) {
+        LocalDateTime drawDate = retrieveNextDrawDate();
+        Ticket savedTicket = Ticket.builder()
+                .drawDate(drawDate)
+                .numbers(numbers)
+                .build();
+
+        return ticketRepository.save(savedTicket);
+    }
+
+    private NumberReceiverResponseDto validateNumbers(Set<Integer> numbers) {
+        List<ValidationResult> validationResults = winningNumberValidator.filterNumbers(numbers);
+        if (!validationResults.isEmpty()) {
+            String resultMessage = winningNumberValidator.createResultMessage();
+            return new NumberReceiverResponseDto(null, resultMessage);
+        }
+        return null;
     }
 
     public List<TicketDto> getUserNumbers(LocalDateTime dateTime) {
@@ -66,11 +76,7 @@ public class NumberReceiverFacade {
         return ticketRepository.findAllTicketsByDrawDate(date)
                 .stream()
                 .filter(ticket -> ticket.drawDate().isEqual(date))
-                .map(ticket -> TicketDto.builder()
-                        .ticketId(ticket.ticketId())
-                        .drawDate(ticket.drawDate())
-                        .numbers(ticket.numbers())
-                        .build())
+                .map(TicketMapper::mapFromTicket)
                 .collect(Collectors.toList());
     }
 
@@ -79,7 +85,7 @@ public class NumberReceiverFacade {
             Ticket ticket = ticketRepository.findByTicketId(ticketId);
             return TicketMapper.mapFromTicket(ticket);
         } catch (Exception e) {
-            throw new RuntimeException(String.format("[Ticket with id [%s] does not exist]", ticketId));
+            throw new RuntimeException(TICKET_DOES_NOT_EXIST.info);
         }
     }
 }

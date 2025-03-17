@@ -1,4 +1,4 @@
-package org.example.domain.loginandregister.dto;
+package org.example.domain.register.dto;
 
 public record UserDto(String userId, String username, String password) {
 }
